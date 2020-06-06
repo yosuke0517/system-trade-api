@@ -1,0 +1,14 @@
+go.sum
+
+/.idea
+
+/tmp
+
+/bin
+
+/pkg
+
+/src
+
+# config
+config.ini
