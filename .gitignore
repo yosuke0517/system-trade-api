@@ -12,3 +12,6 @@ go.sum
 
 # config
 config.ini
+
+# log
+go-trade.log
