@@ -1,3 +1,6 @@
+/*
+bitflyer is access to bitflyterAPI
+*/
 package bitflyer
 
 import (
@@ -27,9 +30,9 @@ func New(key, secret string) *APIClient {
 	return apiClient
 }
 
+// header returns the map[string]string
 func (api APIClient) header(method, endpoint string, body []byte) map[string]string {
 	timeStamp := strconv.FormatInt(time.Now().Unix(), 10)
-	log.Println(timeStamp)
 	message := timeStamp + method + endpoint + string(body)
 
 	mac := hmac.New(sha256.New, []byte(api.secret))
@@ -53,7 +56,6 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 		log.Fatal(err)
 	}
 	endPoint := baseURL.ResolveReference(apiURL).String()
-	log.Printf("action=doRequest endpoint=%s", endPoint)
 
 	// リクエストを作る
 	req, err := http.NewRequest(method, endPoint, bytes.NewBuffer(data))
@@ -83,7 +85,7 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	return body, nil
 }
 
-/**
+/*
 getBalanceのレスポンス
 https://lightning.bitflyer.com/docs/playground#GETv1%2Fme%2Fgetbalance/javascript
 */
@@ -93,10 +95,12 @@ type Balance struct {
 	Available   float64 `json:available`
 }
 
+/*
+現在所持している現金やビットコインの情報を取得する
+*/
 func (api *APIClient) GetBalance() ([]Balance, error) {
 	url := "me/getbalance"
 	resp, err := api.doRequest("GET", url, map[string]string{}, nil)
-	log.Printf("url=%s resp=%s", url, string(resp))
 	if err != nil {
 		log.Printf("action=GetBalance err=%s", err.Error())
 		return nil, err
@@ -108,4 +112,68 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 		return nil, err
 	}
 	return balance, nil
+}
+
+/*
+/v1/tickerのレスポンス
+*/
+type Ticker struct {
+	ProductCode     string  `json:"product_code"`
+	Timestamp       string  `json:"timestamp"`
+	TickID          int     `json:"tick_id"`
+	BestBid         float64 `json:"best_bid"`
+	BestAsk         float64 `json:"best_ask"`
+	BestBidSize     float64 `json:"best_bid_size"`
+	BestAskSize     float64 `json:"best_ask_size"`
+	TotalBidDepth   float64 `json:"total_bid_depth"`
+	TotalAskDepth   float64 `json:"total_ask_depth"`
+	Ltp             float64 `json:"ltp"`
+	Volume          float64 `json:"volume"`
+	VolumeByProduct float64 `json:"volume_by_product"`
+}
+
+/*
+中間値を求める
+*/
+func (t *Ticker) GetMidPrice() float64 {
+	return (t.BestBid + t.BestAsk) / 2
+}
+
+/*
+データベースが対応している日付型になおすメソッド
+*/
+func (t *Ticker) DateTime() time.Time {
+	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
+	if err != nil {
+		log.Printf("action=DateTime, err=%s", err.Error())
+	}
+	return dateTime
+}
+
+/*
+時間変換用メソッド
+@param 時間単位：h,m,s
+@return time.Time（12:12:00 → duration hを与えると12:00:00に変換される
+*/
+func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
+	return t.DateTime().Truncate(duration)
+}
+
+/*
+ビットコインの情報を取得する
+*/
+func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
+	url := "ticker"
+	resp, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
+	if err != nil {
+		log.Printf("action=getTicker err=%s", err.Error())
+		return nil, err
+	}
+	var ticker Ticker
+	err = json.Unmarshal(resp, &ticker)
+	if err != nil {
+		log.Printf("action=getTicker err=%s", err.Error())
+		return nil, err
+	}
+	return &ticker, nil
 }
