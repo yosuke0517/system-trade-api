@@ -15,6 +15,7 @@ RUN set -eux && \
   chmod +x /go/bin/air && \
   go get -u github.com/labstack/echo/... && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
+  go get golang.org/x/tools/cmd/godoc && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
 
 ENV GO111MODULE on
@@ -33,4 +34,5 @@ RUN set -x && \
   adduser -D -G go go && \
   chown -R go:go /app/system-trade-api
 
-CMD ["./system-trade-api"]
+#CMD ["./system-trade-api"]
+CMD ["/startup.sh"]
