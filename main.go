@@ -1,7 +1,7 @@
 package main
 
 import (
-	"app/bitflyer"
+	"app/app/interfaces/gateway"
 	"app/config"
 	"app/utils"
 	"fmt"
@@ -10,7 +10,7 @@ import (
 
 func handler(writer http.ResponseWriter, request *http.Request) {
 	// not リアルタイム
-	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
+	apiClient := gateway.New(config.Config.ApiKey, config.Config.ApiSecret)
 	// ticker, _ := apiClient.GetTicker("BTC_JPY")
 	//fmt.Print(ticker.GetMidPrice())
 	//fmt.Print(apiClient.GetBalance())
@@ -48,7 +48,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	utils.LoggingSettings(config.Config.LogFile)
-	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
+	apiClient := gateway.New(config.Config.ApiKey, config.Config.ApiSecret)
 	// http.HandleFunc("/", handler)
 	// http.ListenAndServe(":8080", nil)
 	// オーダー一覧 TODO 固定じゃなくて動的にする

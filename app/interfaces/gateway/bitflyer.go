@@ -1,7 +1,7 @@
 /*
 bitflyer is access to bitflyterAPI
 */
-package bitflyer
+package gateway
 
 import (
 	"bytes"
@@ -21,6 +21,7 @@ import (
 
 const baseURL = "https://api.bitflyer.com/v1/"
 
+// TODO usecaces/dto/配下へファイルとして格納
 type APIClient struct {
 	key        string
 	secret     string
@@ -88,7 +89,7 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 }
 
 /*
-getBalanceのレスポンス
+getBalanceのレスポンス　// TODO usecaces/dto/配下へファイルとして格納
 https://lightning.bitflyer.com/docs/playground#GETv1%2Fme%2Fgetbalance/javascript
 */
 type Balance struct {
@@ -117,7 +118,7 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 }
 
 /*
-/v1/tickerのレスポンス
+/v1/tickerのレスポンス　// TODO usecaces/dto/配下へファイルとして格納
 */
 type Ticker struct {
 	ProductCode     string  `json:"product_code"`
@@ -180,6 +181,7 @@ func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
 	return &ticker, nil
 }
 
+// TODO usecaces/dto/配下へファイルとして格納
 type JsonRPC2 struct {
 	Version string      `json:"jsonrpc"`
 	Method  string      `json:"method"`
@@ -188,6 +190,7 @@ type JsonRPC2 struct {
 	Id      *int        `json:"id,omitempty"`
 }
 
+// TODO usecaces/dto/配下へファイルとして格納
 type SubscribeParams struct {
 	Channel string `json:"channel"`
 }
@@ -237,7 +240,7 @@ OUTER:
 	}
 }
 
-// GetTradingCommission 手数料
+// GetTradingCommission 手数料 // TODO usecaces/dto/配下へファイルとして格納
 type TradingCommission struct {
 	CommissionRate float64 `json:"commission_rate"`
 }
@@ -259,7 +262,7 @@ func (api *APIClient) GetTradingCommission(productCode string) (*TradingCommissi
 	return &tradingCommission, nil
 }
 
-// Order 注文
+// Order 注文 // TODO usecaces/dto/配下へファイルとして格納
 type Order struct {
 	ID                     int     `json:"id"`
 	ChildOrderAcceptanceID string  `json:"child_order_acceptance_id"`
@@ -285,6 +288,7 @@ type Order struct {
 	After                  int     `json:"after"`
 }
 
+// TODO usecaces/dto/配下へファイルとして格納
 type ResponseSendChildOrder struct {
 	ChildOrderAcceptanceID string `json:"child_order_acceptance_id"`
 }

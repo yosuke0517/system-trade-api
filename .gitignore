@@ -15,3 +15,6 @@ config.ini
 
 # log
 go-trade.log
+
+# env
+.env
