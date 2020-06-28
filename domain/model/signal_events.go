@@ -5,7 +5,7 @@ import (
 )
 
 // SignalEvents 売買のイベントを書き込む
-type Favorite struct {
+type SignalEvents struct {
 	Time        time.Time `gorm:"primary_key"`
 	ProductCode string    `json:"product_code"`
 	Side        string    `json:"side"` // BUY or SELL

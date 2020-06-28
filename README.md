@@ -1,6 +1,9 @@
 # system-trade-api
-# クリーンアーキテクチャを採用してみる
-- API通信：interfaces/gateway/
+# レイヤードアーキテクチャを採用してみる
+- API通信：api/
+- アプリケーション層：application/
+- ドメイン層：domain/
+- DBとのやりとり：infrastructure/
 ### システムトレードアプリのAPI
 - 現在所持している現金やビットコインの情報を取得する：`GetBalance`
 - ビットコインの情報（現在の価格等）を取得する：`GetTicker`

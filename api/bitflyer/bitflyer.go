@@ -1,7 +1,7 @@
 /*
 bitflyer is access to bitflyterAPI
 */
-package gateway
+package api
 
 import (
 	"bytes"
@@ -190,7 +190,6 @@ type JsonRPC2 struct {
 	Id      *int        `json:"id,omitempty"`
 }
 
-// TODO usecaces/dto/配下へファイルとして格納
 type SubscribeParams struct {
 	Channel string `json:"channel"`
 }
@@ -240,7 +239,7 @@ OUTER:
 	}
 }
 
-// GetTradingCommission 手数料 // TODO usecaces/dto/配下へファイルとして格納
+// GetTradingCommission 手数料 // TODO usecaces/dto/配下へファイルとして格納f
 type TradingCommission struct {
 	CommissionRate float64 `json:"commission_rate"`
 }
