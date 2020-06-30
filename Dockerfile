@@ -7,15 +7,17 @@ WORKDIR /go/app
 COPY . .
 
 ENV GO111MODULE=off
+ENV CGO_ENABLED=0
 
 RUN set -eux && \
   apk update && \
-  apk add --no-cache git curl && \
+  apk add --no-cache git curl gcc alpine-sdk && \
   curl -fLo /go/bin/air https://git.io/linux_air && \
   chmod +x /go/bin/air && \
   go get -u github.com/labstack/echo/... && \
   go get -u github.com/go-delve/delve/cmd/dlv && \
   go get golang.org/x/tools/cmd/godoc && \
+  go get -v github.com/rubenv/sql-migrate/... && \
   go build -o /go/bin/dlv github.com/go-delve/delve/cmd/dlv
 
 ENV GO111MODULE on

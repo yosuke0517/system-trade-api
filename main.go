@@ -1,15 +1,12 @@
 package main
 
 import (
-	"app/api/bitflyer"
 	"app/utils"
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 	"os"
-	"time"
 )
 
 func init() {
@@ -29,17 +26,17 @@ func main() {
 	e.Use(middleware.CORS())
 
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
-	apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
-	tickerChannel := make(chan api.Ticker)
-	go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)
-	for ticker := range tickerChannel {
-		fmt.Println(ticker)
-		fmt.Println(ticker.GetMidPrice())
-		fmt.Println(ticker.DateTime())
-		fmt.Println(ticker.TruncateDateTime(time.Second))
-		fmt.Println(ticker.TruncateDateTime(time.Minute))
-		fmt.Println(ticker.TruncateDateTime(time.Hour))
-	}
+	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	//tickerChannel := make(chan api.Ticker)
+	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)
+	//for ticker := range tickerChannel {
+	//	fmt.Println(ticker)
+	//	fmt.Println(ticker.GetMidPrice())
+	//	fmt.Println(ticker.DateTime())
+	//	fmt.Println(ticker.TruncateDateTime(time.Second))
+	//	fmt.Println(ticker.TruncateDateTime(time.Minute))
+	//	fmt.Println(ticker.TruncateDateTime(time.Hour))
+	//}
 	// http.HandleFunc("/", handler)
 	// http.ListenAndServe(":8080", nil)
 	// オーダー一覧 TODO 固定じゃなくて動的にするfff
