@@ -22,4 +22,9 @@
   - `godoc -http=:6060`
   
 # データベース
-- MySQL への接続はミドルウェアで行い、接続を保持したインスタンスをコンテキストに登録します。`/middlewares/database.go`
+- Mysqlを使用する
+- ORマッパーは使用しない
+- マイグレーションは[sql-migrate](https://github.com/rubenv/sql-migrate)を使用する
+  - `sql-migrate new テーブル名`でマイグレーションファイル作成
+  - `sql-migrate up`でマイグレーション（アップグレード）
+  - `sql-migrate down`でダウンダウングレード
