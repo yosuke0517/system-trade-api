@@ -14,8 +14,10 @@ services:
       - 6060:6060
     security_opt:
       - apparmor:unconfined
+    tty: true
     cap_add:
       - SYS_PTRACE
+    stdin_open: true
     depends_on:
       - db
   db:
