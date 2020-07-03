@@ -41,5 +41,6 @@ services:
       - 3306
     volumes:
       - dbdata:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/my.conf
 volumes:
   dbdata:
