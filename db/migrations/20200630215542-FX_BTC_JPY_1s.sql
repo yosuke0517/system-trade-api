@@ -1,6 +1,6 @@
 
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS `fx_btc_jpy1m` (
+CREATE TABLE IF NOT EXISTS `FX_BTC_JPY_1s` (
   `time` DATETIME PRIMARY KEY NOT NULL,
   `open` float,
   `close` float,
@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS `fx_btc_jpy1m` (
   `volume` float
 );
 -- +migrate Down
-DROP TABLE IF EXISTS `fx_btc_jpy1m`;
+DROP TABLE IF EXISTS `FX_BTC_JPY_1s`;

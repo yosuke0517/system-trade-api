@@ -6,7 +6,7 @@ import (
 )
 
 type CandleRepository interface {
-	Insert(time.Time, float64, float64, float64, float64, float64) error
-	Save(time.Time, float64, float64, float64, float64, float64) error
-	FindOne(time.Time) (model.Candle, error)
+	Insert() error
+	Save() error
+	GetCandle(productCode string, duration time.Duration, dateTime time.Time) (model.Candle, error)
 }

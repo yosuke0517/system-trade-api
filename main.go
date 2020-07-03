@@ -1,7 +1,10 @@
 package main
 
 import (
+	"app/application/controllers"
+	"app/infrastructure"
 	"app/utils"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -26,6 +29,8 @@ func main() {
 	e.Use(middleware.CORS())
 
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
+	fmt.Println(infrastructure.DB)
+	controllers.StreamIngestionData()
 	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	//tickerChannel := make(chan api.Ticker)
 	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)

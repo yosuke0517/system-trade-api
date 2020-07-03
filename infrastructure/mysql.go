@@ -33,18 +33,21 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
-	"os"
 )
 
 var DB *sql.DB
 
 func init() {
 	var err error
-	DB, err = sql.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+
-		"@tcp("+os.Getenv("DB_HOST")+":"+os.Getenv("DB_PORT")+")/"+
-		os.Getenv("DB_DATABASE")+
-		"?charset=utf8mb4&parseTime=True&loc=Local")
-
+	//DB, err = sql.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+
+	//	"@tcp("+os.Getenv("DB_HOST")+":"+os.Getenv("DB_PORT")+")/"+
+	//	os.Getenv("DB_DATABASE")+
+	//	"?charset=utf8mb4&parseTime=True&loc=Local")
+	//
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	DB, err = sql.Open("mysql", "root:pass@tcp(db:3306)/systemtrade?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		log.Fatal(err)
 	}
