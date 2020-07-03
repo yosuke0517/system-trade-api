@@ -51,8 +51,6 @@ func (c *candleInfraStruct) Insert() error {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("c.Time.In(location)")
-	fmt.Println(c.Time.In(location))
 	_, err = ins.Exec(c.Time.In(location), c.Open, c.Close, c.High, c.Low, c.Volume)
 	if err != nil {
 		log.Println(err)
@@ -91,12 +89,6 @@ func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration ti
 	if currentCandle == nil {
 		candle := NewCandle(productCode, duration, ticker.TruncateDateTime(duration),
 			price, price, price, price, ticker.Volume)
-		fmt.Println("ticker.TruncateDateTime(duration)")
-		fmt.Println(ticker.TruncateDateTime(duration))
-		fmt.Println("duration")
-		fmt.Println(duration)
-		fmt.Println("candle")
-		fmt.Println(&candle)
 		candle.Insert()
 		return true
 	}
