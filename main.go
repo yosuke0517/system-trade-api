@@ -24,6 +24,11 @@ func init() {
 func main() {
 	e := echo.New()
 
+	err := godotenv.Load()
+	if err != nil {
+		logrus.Fatal("Error loading .env")
+	}
+
 	//Middlewares hoge
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
