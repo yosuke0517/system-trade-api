@@ -7,7 +7,9 @@ services:
       target: build
     volumes:
       - ./:/go/app
-    command: air
+    command: >
+      air
+      sql-migrate up
     ports:
       - 8080:8080
       - 2345:2345
@@ -21,7 +23,11 @@ services:
     depends_on:
       - db
   db:
-    image: mysql:5.7
+    build:
+      # dockerfileの名前だけ指定する
+      dockerfile: Dockerfile
+      # contextで場所を指定する
+      context: ./mysql
     env_file:
       - .env
     command: >

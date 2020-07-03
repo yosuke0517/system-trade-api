@@ -1,7 +1,10 @@
 package main
 
 import (
+	"app/application/controllers"
+	"app/infrastructure"
 	"app/utils"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -21,11 +24,18 @@ func init() {
 func main() {
 	e := echo.New()
 
+	err := godotenv.Load()
+	if err != nil {
+		logrus.Fatal("Error loading .env")
+	}
+
 	//Middlewares hoge
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
+	fmt.Println(infrastructure.DB)
+	controllers.StreamIngestionData()
 	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	//tickerChannel := make(chan api.Ticker)
 	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)

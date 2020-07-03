@@ -35,10 +35,6 @@ func init() {
 	}
 
 	Config = ConfigList{
-		ApiKey:        cfg.Section("bitflyer").Key("api_key").String(),
-		ApiSecret:     cfg.Section("bitflyer").Key("api_secret").String(),
-		LogFile:       cfg.Section("gotrade").Key("log_file").String(),
-		ProductCode:   cfg.Section("gotrade").Key("product_code").String(),
 		Durations:     durations,
 		TradeDuration: durations[cfg.Section("gotrading").Key("trade_duration").String()],
 	}
