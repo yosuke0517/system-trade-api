@@ -1,7 +1,6 @@
 package databases
 
 import (
-	api "app/api/bitflyer"
 	"app/infrastructure"
 	"fmt"
 	"log"
@@ -70,7 +69,7 @@ func (c *candleInfraStruct) Save() error {
 }
 
 // キャンドル情報を取得する
-func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *candleInfraStruct {
+func Select(productCode string, duration time.Duration, dateTime time.Time) *candleInfraStruct {
 	tableName := GetCandleTableName(productCode, duration)
 	cmd := fmt.Sprintf("SELECT time, open, close, high, low, volume FROM  %s WHERE time = ?", tableName)
 	var candle candleInfraStruct
@@ -79,27 +78,4 @@ func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *
 		return nil
 	}
 	return NewCandle(productCode, duration, candle.Time, candle.Open, candle.Close, candle.High, candle.Low, candle.Volume)
-}
-
-// キャンドル情報を保存する
-func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration time.Duration) bool {
-	currentCandle := GetCandle(productCode, duration, ticker.TruncateDateTime(duration))
-	price := ticker.GetMidPrice()
-	// 秒単位は毎回insertして欲しい
-	if currentCandle == nil {
-		candle := NewCandle(productCode, duration, ticker.TruncateDateTime(duration),
-			price, price, price, price, ticker.Volume)
-		candle.Insert()
-		return true
-	}
-	// 分・時単位は秒単位ではupdateする
-	if currentCandle.High <= price {
-		currentCandle.High = price
-	} else if currentCandle.Low >= price {
-		currentCandle.Low = price
-	}
-	currentCandle.Volume += ticker.Volume
-	currentCandle.Close = price
-	currentCandle.Save()
-	return false
 }

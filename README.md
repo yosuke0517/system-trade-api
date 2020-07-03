@@ -28,3 +28,9 @@
   - `sql-migrate new テーブル名`でマイグレーションファイル作成
   - `sql-migrate up`でマイグレーション（アップグレード）
   - `sql-migrate down`でダウンダウングレード
+  
+# github運用
+- issueベースのPR開発
+  - issueを登録する
+  - `feature/Issues#○○`でブランチを作る
+  - `git commit -m "close #○○" --allow-empty`で空コミットしてissueと紐付ける
