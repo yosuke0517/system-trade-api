@@ -4,6 +4,11 @@
 - アプリケーション層：application/
 - ドメイン層：domain/
 - DBとのやりとり：infrastructure/
+### フロー
+- controller→service→database→repositoryな感じ
+  - controllerからは外部API通信かservice（DB）を呼ぶだけ（serviceは名前だけで何をするかわかるようにできるだけ具体的な名前がいいかも）
+  - repositoryが実際にDB通信できる箇所
+- 現状完全なレイヤードアーキではないけどリリースを最優先で徐々にきれいにしてく
 ### システムトレードアプリのAPI
 - 現在所持している現金やビットコインの情報を取得する：`GetBalance`
 - ビットコインの情報（現在の価格等）を取得する：`GetTicker`
