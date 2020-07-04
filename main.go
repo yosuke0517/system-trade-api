@@ -30,7 +30,7 @@ func main() {
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
 
 	// routes.Init(e)
-	// go controllers.StreamIngestionData()
+	go controllers.StreamIngestionData()
 	//e.Logger.Fatal(e.Start(":8080"))
 	server.Serve()
 	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
