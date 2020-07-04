@@ -2,7 +2,7 @@ package main
 
 import (
 	"app/application/controllers"
-	"app/routes"
+	"app/application/server"
 	"app/utils"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
@@ -29,10 +29,10 @@ func main() {
 
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
 
-	// Routes
-	routes.Init(e)
+	// routes.Init(e)
 	// go controllers.StreamIngestionData()
-	e.Logger.Fatal(e.Start(":8080"))
+	//e.Logger.Fatal(e.Start(":8080"))
+	server.Serve()
 	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	//tickerChannel := make(chan api.Ticker)
 	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)

@@ -2,10 +2,10 @@ package controllers
 
 import (
 	api "app/api/bitflyer"
+	"app/application/response"
 	"app/config"
 	"app/domain/service"
-	"github.com/labstack/echo"
-	"github.com/valyala/fasthttp"
+	"net/http"
 	"os"
 )
 
@@ -25,12 +25,13 @@ func StreamIngestionData() {
 	}()
 }
 
-func GetAllCandle() echo.HandlerFunc {
-	return func(context echo.Context) error {
+func GetAllCandle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		limit := 100     // TODO 動的に
 		duration := "1m" // TODO 動的に
 		durationTime := config.Config.Durations[duration]
 		df, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), durationTime, limit)
-		return context.JSON(fasthttp.StatusOK, df.Candles)
+		//return context.JSON(fasthttp.StatusOK, df.Candles)
+		response.Success(w, df.Candles)
 	}
 }
