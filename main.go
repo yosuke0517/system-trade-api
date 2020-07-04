@@ -2,9 +2,8 @@ package main
 
 import (
 	"app/application/controllers"
-	"app/infrastructure"
+	"app/application/server"
 	"app/utils"
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -24,18 +23,16 @@ func init() {
 func main() {
 	e := echo.New()
 
-	err := godotenv.Load()
-	if err != nil {
-		logrus.Fatal("Error loading .env")
-	}
-
-	//Middlewares hoge
+	//Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
 	utils.LoggingSettings(os.Getenv("LOG_FILE"))
-	fmt.Println(infrastructure.DB)
-	controllers.StreamIngestionData()
+
+	// routes.Init(e)
+	// go controllers.StreamIngestionData()
+	//e.Logger.Fatal(e.Start(":8080"))
+	server.Serve()
 	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	//tickerChannel := make(chan api.Ticker)
 	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)
@@ -47,9 +44,10 @@ func main() {
 	//	fmt.Println(ticker.TruncateDateTime(time.Minute))
 	//	fmt.Println(ticker.TruncateDateTime(time.Hour))
 	//}
+	controllers.GetAllCandle()
 	// http.HandleFunc("/", handler)
 	// http.ListenAndServe(":8080", nil)
-	// オーダー一覧 TODO 固定じゃなくて動的にするfff
+	// オーダー一覧 TODO 固定じゃなくて動的にする
 	//i := "JRF20200620-065843-055784"
 	//params := map[string]string{
 	//	"product_code":              "FX_BTC_JPY",

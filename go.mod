@@ -11,5 +11,6 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351 // indirect
 	github.com/sirupsen/logrus v1.6.0
+	github.com/valyala/fasthttp v1.14.0
 	gopkg.in/ini.v1 v1.57.0
 )
