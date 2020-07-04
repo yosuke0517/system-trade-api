@@ -16,6 +16,8 @@
 - 手数料を取得する：`GetTradingCommission`
 - 売買する：`SendOrder`
 - 売買履歴を確認する：`ListOrder`
+- 指定したプロダクトコード・時間足のキャンドル情報を取得する：`GetAllCandle`
+  - 確認方法：`http://localhost:8080/api/chart?product_code=FX_BTC_JPY&duration=1h`
 
 # SETUP
 - アプリ起動
