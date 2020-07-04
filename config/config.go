@@ -29,9 +29,10 @@ func init() {
 		os.Exit(1)
 	}
 	durations := map[string]time.Duration{
-		"1s": time.Second,
-		"1m": time.Minute,
-		"1h": time.Hour,
+		"1s":  time.Second,
+		"30s": 30 * time.Second,
+		"1m":  time.Minute,
+		"1h":  time.Hour,
 	}
 
 	Config = ConfigList{

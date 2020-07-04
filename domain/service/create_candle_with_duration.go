@@ -10,7 +10,7 @@ import (
 func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration time.Duration) bool {
 	currentCandle := candle.Select(productCode, duration, ticker.TruncateDateTime(duration))
 	price := ticker.GetMidPrice()
-	// 秒単位は毎回insertして欲しい
+	// 秒単位は毎回insert
 	if currentCandle == nil {
 		candle := candle.NewCandle(productCode, duration, ticker.TruncateDateTime(duration),
 			price, price, price, price, ticker.Volume)
