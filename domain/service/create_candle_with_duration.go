@@ -2,13 +2,14 @@ package service
 
 import (
 	api "app/api/bitflyer"
+	"app/domain/model"
 	"app/infrastructure/databases/candle"
 	"time"
 )
 
 // キャンドル情報を保存する
 func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration time.Duration) bool {
-	currentCandle := candle.Select(productCode, duration, ticker.TruncateDateTime(duration))
+	currentCandle := candle.SelectOne(productCode, duration, ticker.TruncateDateTime(duration))
 	price := ticker.GetMidPrice()
 	// 秒単位は毎回insert
 	if currentCandle == nil {
@@ -27,4 +28,24 @@ func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration ti
 	currentCandle.Close = price
 	currentCandle.Save()
 	return false
+}
+
+func GetAllCandle(productCode string, duration time.Duration, limit int) (dfCandle *model.DataFrameCandle, err error) {
+	rows := candle.SelectAll(productCode, duration, limit)
+	defer rows.Close()
+	dfCandle = &model.DataFrameCandle{}
+	dfCandle.ProductCode = productCode
+	dfCandle.Duration = duration
+	for rows.Next() {
+		var candle model.Candle
+		candle.ProductCode = productCode
+		candle.Duration = duration
+		rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
+		dfCandle.Candles = append(dfCandle.Candles, candle)
+	}
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+	return dfCandle, nil
 }

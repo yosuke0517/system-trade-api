@@ -2,6 +2,7 @@ package candle
 
 import (
 	"app/infrastructure"
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -69,7 +70,7 @@ func (c *candleInfraStruct) Save() error {
 }
 
 // キャンドル情報を取得する
-func Select(productCode string, duration time.Duration, dateTime time.Time) *candleInfraStruct {
+func SelectOne(productCode string, duration time.Duration, dateTime time.Time) *candleInfraStruct {
 	tableName := GetCandleTableName(productCode, duration)
 	cmd := fmt.Sprintf("SELECT time, open, close, high, low, volume FROM  %s WHERE time = ?", tableName)
 	var candle candleInfraStruct
@@ -78,4 +79,17 @@ func Select(productCode string, duration time.Duration, dateTime time.Time) *can
 		return nil
 	}
 	return NewCandle(productCode, duration, candle.Time, candle.Open, candle.Close, candle.High, candle.Low, candle.Volume)
+}
+
+// キャンドル情報を全て取得する
+func SelectAll(productCode string, duration time.Duration, limit int) *sql.Rows {
+	tableName := GetCandleTableName(productCode, duration)
+	cmd := fmt.Sprintf(`SELECT * FROM (
+		SELECT time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?
+		) AS candle ORDER BY time ASC`, tableName)
+	rows, err := infrastructure.DB.Query(cmd, limit)
+	if err != nil {
+		return nil
+	}
+	return rows
 }
