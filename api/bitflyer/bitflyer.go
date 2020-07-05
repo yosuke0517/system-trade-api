@@ -49,7 +49,7 @@ func (api APIClient) header(method, endpoint string, body []byte) map[string]str
 	}
 }
 
-func (api *APIClient) doRequest(method, urlPath string, query map[string]string, data []byte) (body []byte, err error) {
+func (api *APIClient) doRequest(method, urlPath string, query map[string]string, data []byte) (body []byte, statusCode int, err error) {
 	baseURL, err := url.Parse(baseURL)
 	if err != nil {
 		log.Fatal(err)
@@ -78,18 +78,18 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	// APIアクセス
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, resp.StatusCode, err
 	}
 	defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, resp.StatusCode, err
 	}
-	return body, nil
+	return body, resp.StatusCode, nil
 }
 
 /*
-getBalanceのレスポンス　// TODO usecaces/dto/配下へファイルとして格納
+getBalanceのレスポンス
 https://lightning.bitflyer.com/docs/playground#GETv1%2Fme%2Fgetbalance/javascript
 */
 type Balance struct {
@@ -103,7 +103,7 @@ type Balance struct {
 */
 func (api *APIClient) GetBalance() ([]Balance, error) {
 	url := "me/getbalance"
-	resp, err := api.doRequest("GET", url, map[string]string{}, nil)
+	resp, _, err := api.doRequest("GET", url, map[string]string{}, nil)
 	if err != nil {
 		log.Printf("action=GetBalance err=%s", err.Error())
 		return nil, err
@@ -118,7 +118,7 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 }
 
 /*
-/v1/tickerのレスポンス　// TODO usecaces/dto/配下へファイルとして格納
+/v1/tickerのレスポンス
 */
 type Ticker struct {
 	ProductCode     string  `json:"product_code"`
@@ -167,7 +167,7 @@ func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
 */
 func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
 	url := "ticker"
-	resp, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
+	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
 	if err != nil {
 		log.Printf("action=getTicker err=%s", err.Error())
 		return nil, err
@@ -181,7 +181,6 @@ func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
 	return &ticker, nil
 }
 
-// TODO usecaces/dto/配下へファイルとして格納
 type JsonRPC2 struct {
 	Version string      `json:"jsonrpc"`
 	Method  string      `json:"method"`
@@ -194,6 +193,7 @@ type SubscribeParams struct {
 	Channel string `json:"channel"`
 }
 
+// リアルタイムTicker情報取得
 func (api *APIClient) GetRealTimeTicker(symbol string, ch chan<- Ticker) {
 	u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
 	log.Printf("connecting to %s", u.String())
@@ -239,7 +239,7 @@ OUTER:
 	}
 }
 
-// GetTradingCommission 手数料 // TODO usecaces/dto/配下へファイルとして格納f
+// GetTradingCommission responce
 type TradingCommission struct {
 	CommissionRate float64 `json:"commission_rate"`
 }
@@ -247,7 +247,7 @@ type TradingCommission struct {
 // get GetTradingCommission 手数料を取得する
 func (api *APIClient) GetTradingCommission(productCode string) (*TradingCommission, error) {
 	url := "me/gettradingcommission"
-	resp, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
+	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
 	if err != nil {
 		log.Printf("action=GetTradingCommission err=%s", err.Error())
 		return nil, err
@@ -261,7 +261,7 @@ func (api *APIClient) GetTradingCommission(productCode string) (*TradingCommissi
 	return &tradingCommission, nil
 }
 
-// Order 注文 // TODO usecaces/dto/配下へファイルとして格納
+// SendOrder 送るdata
 type Order struct {
 	ID                     int     `json:"id"`
 	ChildOrderAcceptanceID string  `json:"child_order_acceptance_id"`
@@ -287,18 +287,19 @@ type Order struct {
 	After                  int     `json:"after"`
 }
 
-// TODO usecaces/dto/配下へファイルとして格納
+// SendOrder responce
 type ResponseSendChildOrder struct {
 	ChildOrderAcceptanceID string `json:"child_order_acceptance_id"`
 }
 
+// 注文を送る
 func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 	data, err := json.Marshal(order)
 	if err != nil {
 		return nil, err
 	}
 	url := "me/sendchildorder"
-	resp, err := api.doRequest("POST", url, map[string]string{}, data)
+	resp, _, err := api.doRequest("POST", url, map[string]string{}, data)
 	if err != nil {
 		return nil, err
 	}
@@ -310,8 +311,9 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 	return &response, nil
 }
 
+// 注文の詳細を取得する
 func (api *APIClient) ListOrder(query map[string]string) ([]Order, error) {
-	resp, err := api.doRequest("GET", "me/getchildorders", query, nil)
+	resp, _, err := api.doRequest("GET", "me/getchildorders", query, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -321,4 +323,24 @@ func (api *APIClient) ListOrder(query map[string]string) ([]Order, error) {
 		return nil, err
 	}
 	return responseListOrder, nil
+}
+
+// キャンセルStruct
+type CancelOrder struct {
+	ProductCode            string `json:"product_code"`
+	ChildOrderAcceptanceID string `json:"child_order_acceptance_id"`
+}
+
+// オーダーをキャンセルする
+func (api *APIClient) CancelOrder(cancelOrder *CancelOrder) (int, error) {
+	data, err := json.Marshal(cancelOrder)
+	if err != nil {
+		return 400, err
+	}
+	url := "me/cancelchildorder"
+	_, statusCode, err := api.doRequest("POST", url, map[string]string{}, data)
+	if err != nil {
+		return 400, err
+	}
+	return statusCode, err
 }
