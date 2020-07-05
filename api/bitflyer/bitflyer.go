@@ -49,7 +49,7 @@ func (api APIClient) header(method, endpoint string, body []byte) map[string]str
 	}
 }
 
-func (api *APIClient) doRequest(method, urlPath string, query map[string]string, data []byte, isAllRes bool) (body []byte, statusCode int, err error) {
+func (api *APIClient) doRequest(method, urlPath string, query map[string]string, data []byte) (body []byte, statusCode int, err error) {
 	baseURL, err := url.Parse(baseURL)
 	if err != nil {
 		log.Fatal(err)
@@ -103,7 +103,7 @@ type Balance struct {
 */
 func (api *APIClient) GetBalance() ([]Balance, error) {
 	url := "me/getbalance"
-	resp, _, err := api.doRequest("GET", url, map[string]string{}, nil, false)
+	resp, _, err := api.doRequest("GET", url, map[string]string{}, nil)
 	if err != nil {
 		log.Printf("action=GetBalance err=%s", err.Error())
 		return nil, err
@@ -167,7 +167,7 @@ func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
 */
 func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
 	url := "ticker"
-	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil, false)
+	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
 	if err != nil {
 		log.Printf("action=getTicker err=%s", err.Error())
 		return nil, err
@@ -247,7 +247,7 @@ type TradingCommission struct {
 // get GetTradingCommission 手数料を取得する
 func (api *APIClient) GetTradingCommission(productCode string) (*TradingCommission, error) {
 	url := "me/gettradingcommission"
-	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil, false)
+	resp, _, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
 	if err != nil {
 		log.Printf("action=GetTradingCommission err=%s", err.Error())
 		return nil, err
@@ -299,7 +299,7 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 		return nil, err
 	}
 	url := "me/sendchildorder"
-	resp, _, err := api.doRequest("POST", url, map[string]string{}, data, false)
+	resp, _, err := api.doRequest("POST", url, map[string]string{}, data)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +313,7 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 
 // 注文の詳細を取得する
 func (api *APIClient) ListOrder(query map[string]string) ([]Order, error) {
-	resp, _, err := api.doRequest("GET", "me/getchildorders", query, nil, false)
+	resp, _, err := api.doRequest("GET", "me/getchildorders", query, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -338,7 +338,7 @@ func (api *APIClient) CancelOrder(cancelOrder *CancelOrder) (int, error) {
 		return 400, err
 	}
 	url := "me/cancelchildorder"
-	_, statusCode, err := api.doRequest("POST", url, map[string]string{}, data, true)
+	_, statusCode, err := api.doRequest("POST", url, map[string]string{}, data)
 	if err != nil {
 		return 400, err
 	}
