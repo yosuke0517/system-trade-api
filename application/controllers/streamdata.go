@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	api "app/api/bitflyer"
+	"app/api/bitflyer"
 	"app/application/response"
 	"app/config"
 	"app/domain/service"
@@ -11,9 +11,9 @@ import (
 )
 
 func StreamIngestionData() {
-	var tickerChannl = make(chan api.Ticker)
-	apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
-	go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
+	var tickerChannl = make(chan bitflyer.Ticker)
+	bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	go func() {
 		for ticker := range tickerChannl {
 			for _, duration := range config.Config.Durations {
