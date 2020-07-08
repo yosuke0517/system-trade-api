@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/application/controllers"
 	"app/application/server"
 	"app/utils"
 	"github.com/joho/godotenv"
@@ -31,18 +32,18 @@ func main() {
 	/**
 	リアルタイム controllerから
 	*/
-	// go controllers.StreamIngestionData()
+	go controllers.StreamIngestionData()
 
 	/**
 	APIClient
 	*/
-	// apiClient := api.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 
 	/**
 	リアルタイム apiから
 	*/
-	//tickerChannel := make(chan api.Ticker)
-	//go apiClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)
+	//tickerChannel := make(chan bitflyer.Ticker)
+	//go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannel)
 	//for ticker := range tickerChannel {
 	//	fmt.Println(ticker)
 	//	fmt.Println(ticker.GetMidPrice())
@@ -65,13 +66,13 @@ func main() {
 	//	"product_code":              "FX_BTC_JPY",
 	//	"child_order_acceptance_id": i,
 	//}
-	//r, _ := apiClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
+	//r, _ := bitflyerClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
 	//fmt.Println(r)
 
 	/**
 	注文
 	*/
-	//order := &api.Order{
+	//order := &bitflyer.Order{
 	//	ProductCode:     "FX_BTC_JPY",
 	//	ChildOrderType:  "LIMIT",
 	//	Side:            "BUY",
@@ -80,7 +81,7 @@ func main() {
 	//	MinuteToExpires: 1440,
 	//	TimeInForce:     "GTC",
 	//}
-	//res, _ := apiClient.SendOrder(order)
+	//res, _ := bitflyerClient.SendOrder(order)
 	//fmt.Println(res)
 
 	/**
@@ -91,16 +92,16 @@ func main() {
 	//	"product_code":              "FX_BTC_JPY",
 	//	"child_order_acceptance_id": i,
 	//}
-	// r, _ := apiClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
+	// r, _ := bitflyerClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
 
 	/**
 	注文キャンセル
 	*/
-	//cancelOrder := &api.CancelOrder{
+	//cancelOrder := &bitflyer.CancelOrder{
 	//	ProductCode: "FX_BTC_JPY",
 	//	ChildOrderAcceptanceID: "child_order_acceptance_id",
 	//}
-	//statusCode, _ := apiClient.CancelOrder(cancelOrder)
+	//statusCode, _ := bitflyerClient.CancelOrder(cancelOrder)
 	//fmt.Println(statusCode)
 	server.Serve()
 }

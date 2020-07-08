@@ -1,14 +1,14 @@
 package service
 
 import (
-	api "app/api/bitflyer"
+	"app/api/bitflyer"
 	"app/domain/model"
 	"app/infrastructure/databases/candle"
 	"time"
 )
 
 // キャンドル情報を保存する
-func CreateCandleWithDuration(ticker api.Ticker, productCode string, duration time.Duration) bool {
+func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, duration time.Duration) bool {
 	currentCandle := candle.SelectOne(productCode, duration, ticker.TruncateDateTime(duration))
 	price := ticker.GetMidPrice()
 	// 秒単位は毎回insert

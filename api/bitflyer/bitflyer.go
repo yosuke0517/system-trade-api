@@ -1,7 +1,7 @@
 /*
 bitflyer is access to bitflyterAPI
 */
-package api
+package bitflyer
 
 import (
 	"bytes"
@@ -29,8 +29,8 @@ type APIClient struct {
 }
 
 func New(key, secret string) *APIClient {
-	apiClient := &APIClient{key, secret, &http.Client{}}
-	return apiClient
+	bitflyerClient := &APIClient{key, secret, &http.Client{}}
+	return bitflyerClient
 }
 
 // header returns the map[string]string
