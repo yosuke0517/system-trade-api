@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -74,11 +75,23 @@ func SystemTradeBase() {
 	//}()
 
 	// 1秒タイマー
-	go func() {
-		for _ = range time.Tick(1 * time.Second) {
-			// TODO 取引中かの判定 goroutine
-			service.SystemTradeService(os.Getenv("PRODUCT_CODE"))
+	for range time.Tick(1 * time.Second) {
+		fmt.Println(time.Now().Truncate(time.Second))
+		if time.Now().Truncate(time.Second).Second() == 0 {
+			var wg sync.WaitGroup
+			closeOrderExecChannel := make(chan bool)
+			wg.Add(1)
+			go service.CloseOrderExecutionCheck(closeOrderExecChannel, &wg)
+			for c := range closeOrderExecChannel {
+				fmt.Println("CloseOrderExecutionCheck 結果")
+				fmt.Println(c)
+				fmt.Println(time.Now().Truncate(time.Second))
+				if c == true {
+					go service.SystemTradeService(os.Getenv("PRODUCT_CODE"), time.Now().Truncate(time.Second))
+				}
+				close(closeOrderExecChannel)
+			}
 		}
-	}()
+	}
 
 }
