@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unsafe"
 )
 
 type candleInfraStruct struct {
@@ -64,29 +65,35 @@ func SystemTradeService(productCode string) {
 			fmt.Println(isUpper)
 			if isUpper == true {
 				// オープン注文
+				fmt.Println("ロングー！！！！！！！")
 				order := &bitflyer.Order{
-					ProductCode:    "FX_BTC_JPY",
-					ChildOrderType: "MARKET", // LIMIT(指値）or MARKET（成行）
-					Side:           "BUY",
-					// Price:           800000,
-					Size:            0.03,
+					ProductCode:     "FX_BTC_JPY",
+					ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
+					Side:            "BUY",
+					Size:            0.09,
 					MinuteToExpires: 1440,
 					TimeInForce:     "GTC",
 				}
 				openRes, _ := bitflyerClient.SendOrder(order)
-				fmt.Println(openRes)
 				// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 				time.Sleep(time.Second * 1)
-				if openRes != nil {
+				fmt.Println("openRes.ChildOrderAcceptanceID")
+				fmt.Println(openRes.ChildOrderAcceptanceID)
+				fmt.Println("unsafe.Sizeof(openRes)")
+				fmt.Println(unsafe.Sizeof(openRes))
+				if openRes.ChildOrderAcceptanceID == "" {
+					log.Fatal("買付できない数量が指定されています。処理を終了します。")
+				} else {
 					params := map[string]string{
 						"product_code":              "FX_BTC_JPY",
 						"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
 					}
 					orderRes, _ := bitflyerClient.ListOrder(params)
+					fmt.Println("orderRes[0]")
 					fmt.Println(orderRes[0])
 					// クローズ注文
 					// TODO 利益は要相談
-					price := math.Floor(orderRes[0].AveragePrice * 1.0001)
+					price := math.Floor(orderRes[0].AveragePrice * 1.00007)
 					fmt.Println("price")
 					fmt.Println(price)
 					size := orderRes[0].Size
@@ -98,6 +105,59 @@ func SystemTradeService(productCode string) {
 							ProductCode:     "FX_BTC_JPY",
 							ChildOrderType:  "LIMIT",
 							Side:            "SELL",
+							Price:           price,
+							Size:            size,
+							MinuteToExpires: 1440,
+							TimeInForce:     "GTC",
+						}
+						closeRes, _ := bitflyerClient.SendOrder(order)
+						fmt.Println(closeRes)
+					}
+				}
+			}
+
+			if isUpper == false {
+				fmt.Println("ショート！！！！！！")
+				// オープン注文
+				order := &bitflyer.Order{
+					ProductCode:     "FX_BTC_JPY",
+					ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
+					Side:            "SELL",
+					Size:            0.11,
+					MinuteToExpires: 1440,
+					TimeInForce:     "GTC",
+				}
+				openRes, _ := bitflyerClient.SendOrder(order)
+				// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
+				time.Sleep(time.Second * 1)
+				fmt.Println("openRes.ChildOrderAcceptanceID")
+				fmt.Println(openRes.ChildOrderAcceptanceID)
+				fmt.Println("unsafe.Sizeof(openRes)")
+				fmt.Println(unsafe.Sizeof(openRes))
+				if openRes.ChildOrderAcceptanceID == "" {
+					log.Fatal("買付できない数量が指定されています。処理を終了します。")
+				} else {
+					params := map[string]string{
+						"product_code":              "FX_BTC_JPY",
+						"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
+					}
+					orderRes, _ := bitflyerClient.ListOrder(params)
+					fmt.Println("orderRes[0]")
+					fmt.Println(orderRes[0])
+					// クローズ注文
+					// TODO 利益は要相談
+					price := math.Floor(orderRes[0].AveragePrice * 0.99993)
+					fmt.Println("price")
+					fmt.Println(price)
+					size := orderRes[0].Size
+					fmt.Println("size")
+					fmt.Println(size)
+					// time.Sleep(time.Second * 1)
+					if orderRes != nil {
+						order := &bitflyer.Order{
+							ProductCode:     "FX_BTC_JPY",
+							ChildOrderType:  "LIMIT",
+							Side:            "BUY",
 							Price:           price,
 							Size:            size,
 							MinuteToExpires: 1440,
