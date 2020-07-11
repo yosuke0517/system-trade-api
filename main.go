@@ -33,12 +33,19 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
+	go controllers.SystemTradeBase()
 
 	/**
 	APIClient
 	*/
 	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 
+	/**
+	資金確認
+	*/
+	//fmt.Println(bitflyerClient.GetBalance())
+	//fmt.Println(bitflyerClient.GetCollateral())
+	//
 	/**
 	リアルタイム apiから
 	*/
@@ -61,13 +68,13 @@ func main() {
 	/**
 	オーダー一覧 TODO 固定じゃなくて動的にする
 	*/
-	//i := "JRF20200620-065843-055784"
+	//i := "JRF20200710-160500-132315"
 	//params := map[string]string{
 	//	"product_code":              "FX_BTC_JPY",
 	//	"child_order_acceptance_id": i,
 	//}
 	//r, _ := bitflyerClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
-	//fmt.Println(r)
+	//fmt.Println(r[0].AveragePrice)
 
 	/**
 	注文
@@ -87,13 +94,13 @@ func main() {
 	/**
 	注文一覧
 	*/
-	//i := "JRF20200705-142019-326604"
+	//i := "JRF20200620-065843-055784"
 	//params := map[string]string{
 	//	"product_code":              "FX_BTC_JPY",
 	//	"child_order_acceptance_id": i,
 	//}
-	// r, _ := bitflyerClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
-
+	//r, _ := bitflyerClient.ListOrder(params) // TODO: s注文できなかったときはerrが返ってこなくて「""」で返ってくる
+	//fmt.Println(r[0])
 	/**
 	注文キャンセル
 	*/
