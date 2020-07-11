@@ -70,7 +70,7 @@ func SystemTradeService(productCode string) {
 					ProductCode:     "FX_BTC_JPY",
 					ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 					Side:            "BUY",
-					Size:            0.09,
+					Size:            0.09, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 					MinuteToExpires: 1440,
 					TimeInForce:     "GTC",
 				}
@@ -123,7 +123,7 @@ func SystemTradeService(productCode string) {
 					ProductCode:     "FX_BTC_JPY",
 					ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 					Side:            "SELL",
-					Size:            0.11,
+					Size:            0.11, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 					MinuteToExpires: 1440,
 					TimeInForce:     "GTC",
 				}
