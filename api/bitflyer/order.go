@@ -1,6 +1,10 @@
 package bitflyer
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+	"time"
+)
 
 // SendOrder 送るdata
 type Order struct {
@@ -84,4 +88,25 @@ func (api *APIClient) CancelOrder(cancelOrder *CancelOrder) (int, error) {
 		return 400, err
 	}
 	return statusCode, err
+}
+
+/*
+データベースが対応している日付型になおすメソッド
+*/
+func (o *Order) DateTime() time.Time {
+	layout := "2006-01-02T15:04:05"
+	dateTime, err := time.Parse(layout, o.ChildOrderDate)
+	if err != nil {
+		log.Printf("action=DateTime, err=%s", err.Error())
+	}
+	return dateTime
+}
+
+/*
+時間変換用メソッド
+@param 時間単位：h,m,s
+@return time.Time（12:12:00 → duration hを与えると12:00:00に変換される
+*/
+func (o *Order) TruncateDateTime(duration time.Duration) time.Time {
+	return o.DateTime().Truncate(duration)
 }

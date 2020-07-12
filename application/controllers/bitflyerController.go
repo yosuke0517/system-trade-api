@@ -6,6 +6,8 @@ import (
 	"app/config"
 	"app/domain/service"
 	"fmt"
+	"log"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -66,7 +68,7 @@ func SystemTradeBase() {
 	//	log.Fatal("証拠金が設定金額を下回っているため取引を中止します。")
 	//}
 	//var tickerChannl = make(chan bitflyer.Ticker)
-	//bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	//go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	//go func() {
 	//	for ticker := range tickerChannl {
@@ -90,6 +92,64 @@ func SystemTradeBase() {
 					go service.SystemTradeService(os.Getenv("PRODUCT_CODE"), time.Now().Truncate(time.Second))
 				}
 				close(closeOrderExecChannel)
+			}
+		}
+
+		// ロスカット
+		if time.Now().Truncate(time.Second).Second() == 57 {
+			params := map[string]string{
+				"product_code":      "FX_BTC_JPY",
+				"child_order_state": "ACTIVE",
+			}
+			orderRes, _ := bitflyerClient.ListOrder(params)
+			// 注文
+			if len(orderRes) != 0 {
+				//orderTime, err := orderRes[0].ChildOrderDate
+				//
+				//if err != nil {
+				//	log.Fatal("損切り時間の計算に失敗しました。bitflyerのコンソールにて損切り注文をしてください。")
+				//}
+				orderTime := orderRes[0].TruncateDateTime(time.Second)
+				fmt.Println("orderTime")
+				fmt.Println(orderTime)
+				ticker, err := bitflyerClient.GetTicker(os.Getenv("PRODUCT_CODE"))
+				if err != nil {
+					log.Fatal("ticker情報の取得に失敗しました。アプリケーションを終了します。")
+				}
+
+				// 基準価格計算
+				currentPrice := ticker.GetMidPrice()
+				limitPrice := currentPrice - orderRes[0].Price
+				fmt.Println("limitPrice")
+				fmt.Println(math.Abs(limitPrice))
+				fmt.Println("注文から30分以上経過したかどうか？")
+				fmt.Println(orderTime.Add(time.Minute * 30).Before(time.Now()))
+				// TODO 損切りの条件（仮）注文してから30分経過 or 注文時の価格と現在価格が3000円以上差がある時||
+				if orderTime.Add(time.Minute*30).Before(time.Now()) == true || math.Abs(limitPrice) > 3000 {
+					fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
+					cancelOrder := &bitflyer.CancelOrder{
+						ProductCode:            "FX_BTC_JPY",
+						ChildOrderAcceptanceID: orderRes[0].ChildOrderAcceptanceID,
+					}
+					statusCode, _ := bitflyerClient.CancelOrder(cancelOrder)
+					time.Sleep(time.Second * 1)
+					if statusCode != 200 {
+						log.Fatal("損切りに失敗しました。bitflyerのマイページから手動で損切りしてください。")
+					}
+					if statusCode == 200 {
+						order := &bitflyer.Order{
+							ProductCode:     "FX_BTC_JPY",
+							ChildOrderType:  "MARKET",
+							Side:            orderRes[0].Side,
+							Size:            orderRes[0].Size,
+							MinuteToExpires: 1440,
+							TimeInForce:     "GTC",
+						}
+						closeRes, _ := bitflyerClient.SendOrder(order)
+						fmt.Println("設定時間をオーバーしました。損切りします。")
+						fmt.Println(closeRes)
+					}
+				}
 			}
 		}
 	}

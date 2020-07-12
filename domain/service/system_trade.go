@@ -89,6 +89,7 @@ func SystemTradeService(productCode string, t time.Time) {
 					"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
 				}
 				orderRes, _ := bitflyerClient.ListOrder(params)
+				time.Sleep(time.Second * 2)
 				fmt.Println("orderRes[0]")
 				fmt.Println(orderRes[0])
 				// クローズ注文
@@ -138,6 +139,7 @@ func SystemTradeService(productCode string, t time.Time) {
 					"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
 				}
 				orderRes, _ := bitflyerClient.ListOrder(params)
+				time.Sleep(time.Second * 2)
 				fmt.Println("orderRes[0]")
 				fmt.Println(orderRes[0])
 				// クローズ注文
