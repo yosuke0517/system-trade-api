@@ -44,6 +44,6 @@ services:
     expose:
       - 3306
     volumes:
-      - dbdata:/var/lib/mysql
+      - ./dbdata:/var/lib/mysql
 volumes:
   dbdata:

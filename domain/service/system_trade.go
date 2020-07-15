@@ -56,14 +56,30 @@ func SystemTradeService(productCode string, t time.Time) {
 	}
 
 	// t := time.Now().Truncate(time.Second)
-	fmt.Println("tttttt")
+	fmt.Println("分析する分足の日時")
 	fmt.Println(t.Truncate(time.Minute).Add(-time.Minute))
 	// 0秒台で前回の分足ローソクを分析
 	currentCandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
+	fmt.Println("currentCandle.Open")
+	if currentCandle.ProductCode == "" {
+		for {
+			currentCandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
+			if currentCandle.ProductCode != "" {
+				break
+			}
+		}
+	}
+	fmt.Println(currentCandle.Open)
+	//if currentCandle.High - currentCandle.Low > 2000 {
+	//	var wg sync.WaitGroup
+	//	wg.Add(1)
+	//	go Pause(&wg, 600)
+	//	wg.Wait()
+	//}
 	if currentCandle != nil {
-		isUpper := isUpperJudgment((*candleInfraStruct)(currentCandle))
+		isUpper := isUpperJudgment(productCode, t, (*candleInfraStruct)(currentCandle))
 		fmt.Println(isUpper)
-		if isUpper == true {
+		if isUpper == 0 {
 			// オープン注文
 			fmt.Println("ロングー！！！！！！！")
 			order := &bitflyer.Order{
@@ -76,7 +92,14 @@ func SystemTradeService(productCode string, t time.Time) {
 			}
 			openRes, _ := bitflyerClient.SendOrder(order)
 			// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
-			time.Sleep(time.Second * 1)
+			if openRes.ChildOrderAcceptanceID == "" {
+				for {
+					openRes, _ := bitflyerClient.SendOrder(order)
+					if openRes.ChildOrderAcceptanceID != "" {
+						break
+					}
+				}
+			}
 			fmt.Println("openRes.ChildOrderAcceptanceID")
 			fmt.Println(openRes.ChildOrderAcceptanceID)
 			fmt.Println("unsafe.Sizeof(openRes)")
@@ -89,12 +112,19 @@ func SystemTradeService(productCode string, t time.Time) {
 					"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
 				}
 				orderRes, _ := bitflyerClient.ListOrder(params)
-				time.Sleep(time.Second * 2)
+				if len(orderRes) == 0 {
+					for {
+						orderRes, _ = bitflyerClient.ListOrder(params)
+						if len(orderRes) > 0 {
+							break
+						}
+					}
+				}
 				fmt.Println("orderRes[0]")
 				fmt.Println(orderRes[0])
 				// クローズ注文
 				// TODO 利益は要相談
-				price := math.Floor(orderRes[0].AveragePrice * 1.00007)
+				price := math.Floor(orderRes[0].AveragePrice * 1.00004)
 				size := orderRes[0].Size
 				// time.Sleep(time.Second * 1)
 				if orderRes != nil {
@@ -113,7 +143,7 @@ func SystemTradeService(productCode string, t time.Time) {
 			}
 		}
 
-		if isUpper == false {
+		if isUpper == 1 {
 			fmt.Println("ショート！！！！！！")
 			// オープン注文
 			order := &bitflyer.Order{
@@ -126,7 +156,14 @@ func SystemTradeService(productCode string, t time.Time) {
 			}
 			openRes, _ := bitflyerClient.SendOrder(order)
 			// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
-			time.Sleep(time.Second * 1)
+			if openRes.ChildOrderAcceptanceID == "" {
+				for {
+					openRes, _ := bitflyerClient.SendOrder(order)
+					if openRes.ChildOrderAcceptanceID != "" {
+						break
+					}
+				}
+			}
 			fmt.Println("openRes.ChildOrderAcceptanceID")
 			fmt.Println(openRes.ChildOrderAcceptanceID)
 			fmt.Println("unsafe.Sizeof(openRes)")
@@ -139,12 +176,19 @@ func SystemTradeService(productCode string, t time.Time) {
 					"child_order_acceptance_id": openRes.ChildOrderAcceptanceID,
 				}
 				orderRes, _ := bitflyerClient.ListOrder(params)
-				time.Sleep(time.Second * 2)
+				if len(orderRes) == 0 {
+					for {
+						orderRes, _ = bitflyerClient.ListOrder(params)
+						if len(orderRes) > 0 {
+							break
+						}
+					}
+				}
 				fmt.Println("orderRes[0]")
 				fmt.Println(orderRes[0])
 				// クローズ注文
 				// TODO 利益は要相談
-				price := math.Floor(orderRes[0].AveragePrice * 0.99993)
+				price := math.Floor(orderRes[0].AveragePrice * 0.99996)
 				size := orderRes[0].Size
 				// time.Sleep(time.Second * 1)
 				if orderRes != nil {
@@ -162,19 +206,61 @@ func SystemTradeService(productCode string, t time.Time) {
 				}
 			}
 		}
+
+		if isUpper == 2 {
+			for range time.Tick(time.Second) {
+				fmt.Println(time.Second)
+				fmt.Println(time.Second)
+			}
+		}
 	}
 
 }
 
-func isUpperJudgment(candle *candleInfraStruct) bool {
-	// とりあえず陽線と陰線のみ
-	fmt.Println("candle.Open")
-	fmt.Println(candle.Open)
-	fmt.Println("candle.Close")
-	fmt.Println(candle.Close)
-	if candle.Open < candle.Close {
-		return true
+func isUpperJudgment(productCode string, t time.Time, prevCandle *candleInfraStruct) int {
+	prevcandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
+	// TODO 前回のローソク足が値幅2000円以上のとき5分間取引を中止する
+	//fmt.Println("math.Abs(prevCandle.Close - prevCandle.Open)")
+	//fmt.Println(math.Abs(prevCandle.Close - prevCandle.Open))
+	if math.Abs(prevCandle.Close-prevCandle.Open) > 2000 {
+		return 2
+	}
+	prev1Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*1))
+	prev2Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*2))
+	prev3Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*3))
+	prev4Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*4))
+	prev5Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*5))
+
+	if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil && prev5Candle != nil {
+		prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
+		prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
+		prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
+		prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
+		prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
+		fmt.Println("prev1UpperStatus")
+		fmt.Println(prev1UpperStatus)
+		fmt.Println("prev2UpperStatus")
+		fmt.Println(prev2UpperStatus)
+		fmt.Println("prev3UpperStatus")
+		fmt.Println(prev3UpperStatus)
+		fmt.Println("prev4UpperStatus")
+		fmt.Println(prev4UpperStatus)
+		if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
+			return 1
+		} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
+			return 0
+		} else {
+			if prevcandle.Open < prevcandle.Close {
+				return 0
+			} else {
+				return 1
+			}
+		}
 	} else {
-		return false
+		if prevcandle.Open < prevcandle.Close {
+			return 0
+		} else {
+			return 1
+		}
 	}
 }
