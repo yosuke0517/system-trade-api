@@ -106,7 +106,7 @@ func SystemTradeBase() {
 					fmt.Println(orderTime.Add(time.Minute * 180).Before(time.Now()))
 					// TODO 損切りの条件（仮）注文してから180分経過 or 注文時の価格と現在価格が5000円以上差がある時 ||中止中
 					//if orderTime.Add(time.Minute*30).Before(time.Now()) == true || math.Abs(limitPrice) > 1000 {
-					if math.Abs(limitPrice) > 2000 {
+					if orderTime.Add(time.Minute*120).Before(time.Now()) == true || math.Abs(limitPrice) > 3000 {
 						fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
 						cancelOrder := &bitflyer.CancelOrder{
 							ProductCode:            "FX_BTC_JPY",

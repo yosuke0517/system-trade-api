@@ -12,7 +12,7 @@ import (
 	"unsafe"
 )
 
-type candleInfraStruct struct {
+type CandleInfraStruct struct {
 	ProductCode string
 	Duration    time.Duration
 	Time        time.Time
@@ -61,10 +61,10 @@ func SystemTradeService(productCode string, t time.Time) {
 	// 0秒台で前回の分足ローソクを分析
 	currentCandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
 	fmt.Println("currentCandle.Open")
-	if currentCandle.ProductCode == "" {
+	if currentCandle == nil {
 		for {
 			currentCandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
-			if currentCandle.ProductCode != "" {
+			if currentCandle != nil {
 				break
 			}
 		}
@@ -77,7 +77,7 @@ func SystemTradeService(productCode string, t time.Time) {
 	//	wg.Wait()
 	//}
 	if currentCandle != nil {
-		isUpper := isUpperJudgment(productCode, t, (*candleInfraStruct)(currentCandle))
+		isUpper := IsUpperJudgment(productCode, t, (*CandleInfraStruct)(currentCandle))
 		fmt.Println(isUpper)
 		if isUpper == 0 {
 			// オープン注文
@@ -208,59 +208,67 @@ func SystemTradeService(productCode string, t time.Time) {
 		}
 
 		if isUpper == 2 {
-			for range time.Tick(time.Second) {
-				fmt.Println(time.Second)
-				fmt.Println(time.Second)
-			}
+			fmt.Println("何もしない")
 		}
 	}
 
 }
 
-func isUpperJudgment(productCode string, t time.Time, prevCandle *candleInfraStruct) int {
+func IsUpperJudgment(productCode string, t time.Time, prevCandle *CandleInfraStruct) int {
 	prevcandle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute))
 	// TODO 前回のローソク足が値幅2000円以上のとき5分間取引を中止する
 	//fmt.Println("math.Abs(prevCandle.Close - prevCandle.Open)")
 	//fmt.Println(math.Abs(prevCandle.Close - prevCandle.Open))
-	if math.Abs(prevCandle.Close-prevCandle.Open) > 2000 {
+	//if math.Abs(prevCandle.Close-prevCandle.Open) > 2000 {
+	//	return 2
+	//}
+	cross := 1.0 - (prevcandle.Open / prevcandle.Close)
+	crossValue := math.Abs(cross)
+	fmt.Println("crossValue")
+	fmt.Println(crossValue)
+	// 値幅が1000円以上の場合
+	highToLow := prevcandle.High - prevcandle.Low
+	fmt.Println("highToLow")
+	fmt.Println(highToLow)
+	if crossValue < 0.00005 || highToLow > 2000 {
 		return 2
 	}
-	prev1Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*1))
-	prev2Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*2))
-	prev3Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*3))
-	prev4Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*4))
-	prev5Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*5))
-
-	if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil && prev5Candle != nil {
-		prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
-		prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
-		prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
-		prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
-		prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
-		fmt.Println("prev1UpperStatus")
-		fmt.Println(prev1UpperStatus)
-		fmt.Println("prev2UpperStatus")
-		fmt.Println(prev2UpperStatus)
-		fmt.Println("prev3UpperStatus")
-		fmt.Println(prev3UpperStatus)
-		fmt.Println("prev4UpperStatus")
-		fmt.Println(prev4UpperStatus)
-		if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
-			return 1
-		} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
-			return 0
-		} else {
-			if prevcandle.Open < prevcandle.Close {
-				return 0
-			} else {
-				return 1
-			}
-		}
+	//prev1Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*1))
+	//prev2Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*2))
+	//prev3Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*3))
+	//prev4Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*4))
+	//prev5Candle := candle.SelectOne(productCode, time.Minute, t.Truncate(time.Minute).Add(-time.Minute*5))
+	//
+	//if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil && prev5Candle != nil {
+	//	prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
+	//	prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
+	//	prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
+	//	prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
+	//	prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
+	//	fmt.Println("prev1UpperStatus")
+	//	fmt.Println(prev1UpperStatus)
+	//	fmt.Println("prev2UpperStatus")
+	//	fmt.Println(prev2UpperStatus)
+	//	fmt.Println("prev3UpperStatus")
+	//	fmt.Println(prev3UpperStatus)
+	//	fmt.Println("prev4UpperStatus")
+	//	fmt.Println(prev4UpperStatus)
+	//	if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
+	//		return 2
+	//	} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
+	//		return 2
+	//	} else {
+	//		if prevcandle.Open < prevcandle.Close {
+	//			return 0
+	//		} else {
+	//			return 1
+	//		}
+	//	}
+	//} else {
+	if prevcandle.Open < prevcandle.Close {
+		return 0
 	} else {
-		if prevcandle.Open < prevcandle.Close {
-			return 0
-		} else {
-			return 1
-		}
+		return 1
 	}
+	// }
 }
