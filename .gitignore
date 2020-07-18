@@ -21,3 +21,6 @@ debug.log
 
 # sql-migrate config
 dbconfig.yml
+
+# local dbdata
+/dbdata

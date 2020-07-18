@@ -115,6 +115,8 @@ func (t *Ticker) GetMidPrice() float64 {
 */
 func (t *Ticker) DateTime() time.Time {
 	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
+	//jst, _ := time.LoadLocation("Asia/Tokyo")
+	//now := dateTime.In(jst)
 	if err != nil {
 		log.Printf("action=DateTime, err=%s", err.Error())
 	}

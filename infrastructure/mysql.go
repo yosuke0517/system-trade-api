@@ -23,7 +23,7 @@ func init() {
 	DB, err = sql.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+
 		"@tcp("+os.Getenv("DB_HOST")+":"+os.Getenv("DB_PORT")+")/"+
 		os.Getenv("DB_DATABASE")+
-		"?charset=utf8mb4&parseTime=True&loc=Local")
+		"?charset=utf8mb4&parseTime=true")
 
 	if err != nil {
 		log.Fatal(err)
