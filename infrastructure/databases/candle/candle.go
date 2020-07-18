@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var location = time.FixedZone("Asia/Tokyo", 9*60*60)
-
 type candleInfraStruct struct {
 	ProductCode string
 	Duration    time.Duration
@@ -51,7 +49,8 @@ func (c *candleInfraStruct) Insert() error {
 	if err != nil {
 		log.Println(err)
 	}
-	_, err = ins.Exec(c.Time.In(location), c.Open, c.Close, c.High, c.Low, c.Volume)
+	// jst, _ := time.LoadLocation("Asia/Tokyo")
+	_, err = ins.Exec(c.Time, c.Open, c.Close, c.High, c.Low, c.Volume)
 	if err != nil {
 		log.Println(err)
 	}
@@ -62,10 +61,11 @@ func (c *candleInfraStruct) Insert() error {
 func (c *candleInfraStruct) Save() error {
 	cmd := fmt.Sprintf("UPDATE %s SET open = ?, close = ?, high = ?, low = ?, volume = ? WHERE time = ?", c.TableName())
 	upd, err := infrastructure.DB.Prepare(cmd)
+	// jst, _ := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		log.Println(err)
 	}
-	upd.Exec(c.Open, c.Close, c.High, c.Low, c.Volume, c.Time.In(location))
+	upd.Exec(c.Open, c.Close, c.High, c.Low, c.Volume, c.Time)
 	return nil
 }
 
