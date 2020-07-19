@@ -77,6 +77,17 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct) {
 					if len(orderRes) > 0 {
 						break
 					}
+					if i == 50 {
+						if len(orderRes) == 0 {
+							for i := 0; i < 50; i++ {
+								time.Sleep(time.Second * 1)
+								orderRes, _ = bitflyerClient.ListOrder(params)
+								if len(orderRes) > 0 {
+									break
+								}
+							}
+						}
+					}
 				}
 			}
 			if len(orderRes) == 0 {
@@ -137,6 +148,17 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct) {
 					orderRes, _ = bitflyerClient.ListOrder(params)
 					if len(orderRes) > 0 {
 						break
+					}
+					if i == 50 {
+						if len(orderRes) == 0 {
+							for i := 0; i < 50; i++ {
+								time.Sleep(time.Second * 1)
+								orderRes, _ = bitflyerClient.ListOrder(params)
+								if len(orderRes) > 0 {
+									break
+								}
+							}
+						}
 					}
 				}
 			}

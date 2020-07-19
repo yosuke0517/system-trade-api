@@ -16,16 +16,38 @@ import (
 )
 
 func StreamIngestionData() {
+	var menteCount = 0
 	var tickerChannl = make(chan bitflyer.Ticker)
 	bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	go func() {
-		for ticker := range tickerChannl {
-			for _, duration := range config.Config.Durations {
-				isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
-				if isCreated == true && duration == config.Config.TradeDuration {
-					fmt.Println("ticker.Timestamp")
-					fmt.Println(ticker.Timestamp)
+	StreamIngestionData:
+		for {
+			if time.Now().Truncate(time.Second).Hour() == 19 {
+				if time.Now().Truncate(time.Second).Minute() < 30 {
+					log.Println("4時〜4時30分までメンテナンスのため取引を中断します。")
+					goto Mente
+				}
+			}
+			for ticker := range tickerChannl {
+				for _, duration := range config.Config.Durations {
+					isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
+					if isCreated == true && duration == config.Config.TradeDuration {
+						fmt.Println("ticker.Timestamp")
+						fmt.Println(ticker.Timestamp)
+					}
+				}
+			}
+		}
+	Mente:
+		for {
+			for range time.Tick(1 * time.Second) {
+				menteCount++
+				fmt.Println(menteCount)
+				if menteCount == 1800 {
+					log.Println("Mente：システムトレードを再開します。")
+					menteCount = 0
+					goto StreamIngestionData
 				}
 			}
 		}
@@ -108,6 +130,7 @@ SystemTrade:
 					fmt.Println("上限乖離値かどうか")
 					fmt.Println(limitPriceAbsolute)
 					log.Printf("注文した価格との乖離：%s", strconv.FormatFloat(limitPriceAbsolute, 'f', -1, 64))
+					fmt.Printf("orderTime：%s", orderTime)
 					fmt.Println("注文から60分以上経過したかどうか？")
 					fmt.Println(orderTime.Add(time.Minute * 60).Before(time.Now()))
 					// TODO 損切りの条件（仮）注文してから60分経過 or 注文時の価格と現在価格が2000円以上差がある時 ||中止中
@@ -177,7 +200,10 @@ SystemTrade:
 					orderRes, _ := bitflyerClient.ListOrder(params)
 					// 十字線判定
 					if len(orderRes) == 0 {
-						if (cross > 0.99994 && cross < 1.00006) || highToLow > 2000 {
+						fmt.Println("cross")
+						fmt.Println(cross)
+						//if (cross > 0.99994 && cross < 1.00006) || highToLow > 2000 {
+						if (cross > 0.9999 && cross < 1.0001) || highToLow > 2000 {
 							log.Println("currentCandle")
 							log.Println(currentCandle)
 							log.Println("十字線または設定値を超える値幅を検知しました。取引を2分休みます。")
@@ -244,7 +270,7 @@ Pause:
 		for range time.Tick(1 * time.Second) {
 			count++
 			fmt.Println(count)
-			if count == 115 {
+			if count == 175 {
 				log.Println("Pause：システムトレードを再開します。")
 				count = 0
 				goto SystemTrade
@@ -257,7 +283,7 @@ Mente:
 		for range time.Tick(1 * time.Second) {
 			menteCount++
 			fmt.Println(menteCount)
-			if menteCount == 1800 {
+			if menteCount == 2100 {
 				log.Println("Mente：システムトレードを再開します。")
 				menteCount = 0
 				goto SystemTrade
