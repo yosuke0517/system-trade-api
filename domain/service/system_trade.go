@@ -46,7 +46,7 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct) {
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "BUY",
-			Size:            0.08, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.09, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -64,7 +64,7 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct) {
 			log.Fatal("オープンの注文が約定できませんでした。アプリケーションを終了します。")
 		}
 		if openRes.ChildOrderAcceptanceID == "" {
-			log.Fatal("買付できない数量が指定されています。処理を終了します。")
+			log.Fatal("オープンの注文が約定できませんでした。アプリケーションを終了します。")
 		} else {
 			params := map[string]string{
 				"product_code":              "FX_BTC_JPY",
