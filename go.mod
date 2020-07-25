@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
+	github.com/markcheno/go-talib v0.0.0-20190307022042-cd53a9264d70
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/valyala/fasthttp v1.14.0
