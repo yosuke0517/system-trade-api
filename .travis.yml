@@ -1,6 +1,12 @@
 sudo: required
+language: go
+go:
+  - 1.13.8
 services:
   - docker
+env:
+  global:
+    - GO111MODULE=on
 
 before_install:
 
