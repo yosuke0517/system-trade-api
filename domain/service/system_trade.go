@@ -217,7 +217,7 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // return int:ロング or ショート(1:ロング、2:ショート）, float64:クローズオーダーの率（トレンドによって変える）, bool:前回とトレンドが変わったかどうか
 // 前回のトレンドを受け取りトレンドの変化を判定
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.0005
+	var profitRate = 0.00035
 	dfs6, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 6)
 	dfs12, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 12)
 	dfs47, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 50)
