@@ -42,6 +42,29 @@ func (c *candleInfraStruct) TableName() string {
 	return GetCandleTableName(c.ProductCode, c.Duration)
 }
 
+// テーブルを空にする
+func Truncate() error {
+	cmd1 := fmt.Sprintf("TRUNCATE %s", "FX_BTC_JPY_1h0m0s")
+	cmd2 := fmt.Sprintf("TRUNCATE %s", "FX_BTC_JPY_1m0s")
+	truncate1, err1 := infrastructure.DB.Prepare(cmd1)
+	truncate2, err2 := infrastructure.DB.Prepare(cmd2)
+	if err1 != nil {
+		log.Println(err1)
+	}
+	if err2 != nil {
+		log.Println(err2)
+	}
+	_, err1 = truncate1.Exec()
+	_, err2 = truncate2.Exec()
+	if err1 != nil {
+		log.Println(err1)
+	}
+	if err2 != nil {
+		log.Println(err2)
+	}
+	return nil
+}
+
 // キャンドル情報を追加する
 func (c *candleInfraStruct) Insert() error {
 	cmd := fmt.Sprintf("INSERT INTO %s (time, open, close, high, low, volume) VALUES (?, ?, ?, ?, ?, ?)", c.TableName())

@@ -30,6 +30,7 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 	return false
 }
 
+// chart?product_code=FX_BTC_JPY&duration=1h
 func GetAllCandle(productCode string, duration time.Duration, limit int) (dfCandle *model.DataFrameCandle, err error) {
 	rows := candle.SelectAll(productCode, duration, limit)
 	defer rows.Close()

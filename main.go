@@ -34,7 +34,20 @@ func main() {
 	*/
 	go controllers.StreamIngestionData()
 	go controllers.SystemTradeBase()
-
+	//for range time.Tick(1 * time.Second) {
+	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 7)
+	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 14)
+	//	dfs50, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 50)
+	//	fmt.Println("df")
+	//	fmt.Println(dfs7)
+	//	// 各キャンドルのclose値を渡す
+	//	value7 := talib.Sma(dfs7.Closes(), 7)
+	//	value14 := talib.Sma(dfs14.Closes(), 14)
+	//	value50 := talib.Sma(dfs50.Closes(), 50)
+	//	fmt.Println(value7)
+	//	fmt.Println(value14)
+	//	fmt.Println(value50)
+	//}
 	/**
 	APIClient
 	*/
