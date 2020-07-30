@@ -41,9 +41,9 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - TZ=Asia/Tokyo
     ports:
-      - 3306:3306
+      - 3305:3305
     expose:
-      - 3306
+      - 3305
     volumes:
       - ./dbdata:/var/lib/mysql
 volumes:

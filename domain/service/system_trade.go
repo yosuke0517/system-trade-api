@@ -40,15 +40,17 @@ type Trade struct {
 //5-3 約定したらisTradingフラグを立て、利益確定価格を約定価格の0.00007%に設定し注文。それぞれのchild_order_acceptance_idをLossCutへ渡しロスカットジョブを走らせる。
 //5-4. クローズ注文のchild_order_acceptance_idをCloseOrderExecutionCheckへ渡して約定したかどうかを監視する
 //5 falseの場合ショートで5-1~5-4を実施。
-func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct, profitRate float64) {
+func SystemTradeService(isUpper int, profitRate float64) {
 	bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	log.Println("isUpper:SystemTradeService")
+	log.Println(isUpper)
 	if isUpper == 1 {
 		// オープン注文
 		order := &bitflyer.Order{
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "BUY",
-			Size:            0.09, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.07, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -122,7 +124,7 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct, profitRat
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "SELL",
-			Size:            0.1, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.07, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -151,20 +153,23 @@ func SystemTradeService(isUpper int, currentCandle *CandleInfraStruct, profitRat
 					if len(orderRes) > 0 {
 						break
 					}
-					if i == 50 {
-						if len(orderRes) == 0 {
-							for i := 0; i < 50; i++ {
-								time.Sleep(time.Second * 1)
-								orderRes, _ = bitflyerClient.ListOrder(params)
-								if len(orderRes) > 0 {
-									break
-								}
-							}
-						}
+				}
+			}
+			if len(orderRes) == 0 {
+				for i := 0; i < 50; i++ {
+					orderRes, _ = bitflyerClient.ListOrder(params)
+					if len(orderRes) > 0 {
+						break
 					}
 				}
 			}
 			if len(orderRes) == 0 {
+				for i := 0; i < 50; i++ {
+					orderRes, _ = bitflyerClient.ListOrder(params)
+					if len(orderRes) > 0 {
+						break
+					}
+				}
 				log.Fatal("オープン注文が約定しませんでした。アプリケーションを終了します。")
 			}
 			fmt.Println("orderRes[0]")
@@ -217,53 +222,77 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // return int:ロング or ショート(1:ロング、2:ショート）, float64:クローズオーダーの率（トレンドによって変える）, bool:前回とトレンドが変わったかどうか
 // 前回のトレンドを受け取りトレンドの変化を判定
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.00035
-	dfs6, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 6)
-	dfs12, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 12)
-	dfs47, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 50)
-	if len(dfs47.Closes()) == 50 {
+	var profitRate = 0.0006
+	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
+	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
+	// dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 70)
+	// dfs45, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 45)
+	if len(dfs21.Closes()) == 21 {
 		// 各キャンドルのclose値を渡す
-		value6 := talib.Sma(dfs6.Closes(), 6)
-		value12 := talib.Sma(dfs12.Closes(), 12)
-		value50 := talib.Sma(dfs47.Closes(), 50)
-		fmt.Println("value50")
-		fmt.Println(value50[49])
-		fmt.Println("value12")
-		fmt.Println(value12[11])
-		fmt.Println("value7")
-		fmt.Println(value6[5])
+		value10 := talib.Sma(dfs10.Closes(), 11)
+		value21 := talib.Sma(dfs21.Closes(), 21)
+		// value100 := talib.Sma(dfs100.Closes(), 70)
+		// value45 := talib.Sma(dfs45.Closes(), 45)
+		// fmt.Println("value100")
+		// fmt.Println(value100[69])
+		// fmt.Println("value45")
+		// fmt.Println(value45[44])
+		fmt.Println("value21")
+		fmt.Println(int(value21[20]))
+		fmt.Println("value10")
+		fmt.Println(int(value10[10]))
 		// ロングトレンド
-		if value6[5] > value50[49] && value12[11] > value50[49] {
+		//if value10[9] > value100[69] && value21[20] > value100[69] {
+		//	log.Println("ロングトレンド")
+		//	log.Println("value100")
+		//	log.Println(value100)
+		//	log.Println("value21")
+		//	log.Println(value21)
+		//	log.Println("value10")
+		//	log.Println(value10)
+		//	newTrend = 1
+		//}
+		if value10[10] > value21[20] {
 			log.Println("ロングトレンド")
-			log.Println("value50")
-			log.Println(value50)
-			log.Println("value12")
-			log.Println(value12)
-			log.Println("value6")
-			log.Println(value6)
+			// log.Println("value100")
+			// log.Println(value100)
+			fmt.Println("value21")
+			fmt.Println(int(value21[20]))
+			fmt.Println("value10")
+			fmt.Println(int(value10[10]))
 			newTrend = 1
 		}
 		// 7分平均のみロングへ移行した状態
-		if value6[5] > value50[49] && value12[11] < value50[49] {
-			log.Println("ロングトレンドsmall")
-			newTrend = 4
-		}
-
-		// 7分平均のみショートへ移行した状態
-		if value6[5] < value50[49] && value12[11] > value50[49] {
-			log.Println("ショートトレンドsmall")
-			newTrend = 5
-		}
+		//if value10[9] > value100[69] && value21[20] < value100[69] {
+		//	log.Println("ロングトレンドsmall")
+		//	newTrend = 4
+		//}
+		//
+		//// 7分平均のみショートへ移行した状態
+		//if value10[9] < value100[69] && value21[20] > value100[69] {
+		//	log.Println("ショートトレンドsmall")
+		//	newTrend = 5
+		//}
 
 		// ショートトレンド
-		if value6[5] < value50[49] && value12[11] < value50[49] {
+		//if value10[9] < value100[69] && value21[20] < value100[69] {
+		//	log.Println("ショートトレンド")
+		//	log.Println("value100")
+		//	log.Println(value100)
+		//	log.Println("value21")
+		//	log.Println(value21)
+		//	log.Println("value10")
+		//	log.Println(value10)
+		//	newTrend = 2
+		//}
+		if value10[10] < value21[20] {
 			log.Println("ショートトレンド")
-			log.Println("value50")
-			log.Println(value50)
-			log.Println("value12")
-			log.Println(value12)
-			log.Println("value6")
-			log.Println(value6)
+			// log.Println("value100")
+			// log.Println(value100)
+			fmt.Println("value21")
+			fmt.Println(int(value21[20]))
+			fmt.Println("value10")
+			fmt.Println(int(value10[10]))
 			newTrend = 2
 		}
 		fmt.Println("trend：")
@@ -294,4 +323,48 @@ func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
 		return newTrend, 0, false
 	}
 	return newTrend, 0, false
+}
+
+// トレンドのみ返す
+func SimpleSmaAnalysis() int {
+	var trend = 0
+	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
+	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
+	if len(dfs21.Closes()) == 21 {
+		// 各キャンドルのclose値を渡す
+		value10 := talib.Sma(dfs10.Closes(), 11)
+		value21 := talib.Sma(dfs21.Closes(), 21)
+		fmt.Println("value21")
+		fmt.Println(int(value21[20]))
+		fmt.Println("value10")
+		fmt.Println(int(value10[10]))
+		// ロングトレンド
+		if value10[10] > value21[20] {
+			log.Println("ロングトレンド")
+			// log.Println("value100")
+			// log.Println(value100)
+			fmt.Println("value21")
+			fmt.Println(int(value21[20]))
+			fmt.Println("value10")
+			fmt.Println(int(value10[10]))
+			trend = 1
+			return trend
+		}
+		// ショートトレンド
+		if value10[10] < value21[20] {
+			log.Println("ショートトレンド")
+			// log.Println("value100")
+			// log.Println(value100)
+			fmt.Println("value21")
+			fmt.Println(int(value21[20]))
+			fmt.Println("value10")
+			fmt.Println(int(value10[10]))
+			trend = 2
+			return trend
+		} else {
+			log.Println("キャンドル数がトレード必要数に達していません。3分間取引を中断して必要なキャンドル情報を収集します。SimpleSmaAnalysis")
+			return 3
+		}
+	}
+	return trend
 }
