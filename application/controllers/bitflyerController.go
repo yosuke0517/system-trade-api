@@ -149,7 +149,7 @@ SystemTrade:
 					fmt.Println("注文から120分以上経過したかどうか？")
 					fmt.Println(orderTime.Add(time.Minute * 120).Before(time.Now()))
 					// TODO 損切りの条件（仮）注文してから60分経過 or 注文時の価格と現在価格が2000円以上差がある時 ||中止中
-					if isTrendChange == true || orderTime.Add(time.Minute*120).Before(time.Now()) == true || math.Abs(limitPrice) > 5000 {
+					if isTrendChange == true || orderTime.Add(time.Minute*30).Before(time.Now()) == true || math.Abs(limitPrice) > 3000 {
 						fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
 						cancelOrder := &bitflyer.CancelOrder{
 							ProductCode:            "FX_BTC_JPY",
