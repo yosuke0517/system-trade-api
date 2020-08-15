@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
+	"os"
 )
 
 /*
@@ -47,7 +48,8 @@ START:
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		log.Fatal("dial:", err)
+		log.Println("dial:", err)
+		api.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), ch)
 	}
 	defer c.Close()
 
