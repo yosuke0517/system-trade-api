@@ -332,7 +332,7 @@ SettlementPause:
 		for range time.Tick(1 * time.Second) {
 			settlementCount++
 			fmt.Println(settlementCount)
-			if settlementCount == 300 {
+			if settlementCount == 600 {
 				log.Println("settlementPause：システムトレードを再開します。")
 				isUpper = service.SimpleSmaAnalysis()
 				if isUpper == 1 {
