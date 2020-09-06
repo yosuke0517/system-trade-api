@@ -86,6 +86,7 @@ func SystemTradeBase() {
 	var closeOrderExecutionCheck = false
 	var count = 0
 	var smallPausecount = 0
+	var middlePausecount = 0
 	var menteCount = 0
 	var settlementCount = 0
 	var trend int // 1:ロング, 2:ショート, 3:ローソク情報不足, 4:ロングsmall, 5:ショートsmall
@@ -275,16 +276,23 @@ SystemTrade:
 								value100 := talib.Sma(dfs100.Closes(), 100)
 								// 100分線と現在のキャンドルの乖離を求める
 								disparation := value100[99] / currentCandle.Open
+								neary := value100[99] / currentCandle.Open
+								fmt.Println("neary")
+								fmt.Println(neary)
+								if neary > 0.9999 && neary < 1.0001 {
+									fmt.Println("100分線と現在価格が近いため10分休みます")
+									goto Pause
+								}
 								fmt.Println("disparation")
 								fmt.Println(disparation)
 								// ロング・ショートそれぞれ乖離が大きかったらPauseする
 								if isUpper == 1 && disparation < 0.995 {
 									log.Println("ロング：乖離幅が大きいためPauseします")
-									goto Pause
+									goto MiddlePause
 								}
 								if isUpper == 2 && disparation > 1.005 {
 									log.Println("ショート：乖離幅が大きいためPauseします")
-									goto Pause
+									goto MiddlePause
 								}
 							}
 							if isUpper == 3 {
@@ -359,6 +367,19 @@ SmallPause:
 		}
 	}
 
+MiddlePause:
+	for {
+		for range time.Tick(1 * time.Second) {
+			middlePausecount++
+			fmt.Println(middlePausecount)
+			if middlePausecount == 600 {
+				log.Println("middlePause：システムトレードを再開します。")
+				middlePausecount = 0
+				goto SystemTrade
+			}
+		}
+	}
+
 Mente:
 	for {
 		for range time.Tick(1 * time.Second) {
@@ -370,7 +391,7 @@ Mente:
 					log.Println("現在の残高が取得できませんでした。")
 				} else {
 					currentBalance = currentCollateral.Collateral
-					targetBalance = currentBalance * 1.002
+					targetBalance = currentBalance * 1.04
 					log.Println("今日のターゲット：")
 					log.Println(targetBalance)
 				}
