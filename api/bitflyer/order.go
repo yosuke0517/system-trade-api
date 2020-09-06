@@ -2,6 +2,7 @@ package bitflyer
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 )
@@ -51,6 +52,8 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 	var response ResponseSendChildOrder
 	err = json.Unmarshal(resp, &response)
 	if err != nil {
+		fmt.Println("err")
+		fmt.Println(err)
 		return nil, err
 	}
 	return &response, nil

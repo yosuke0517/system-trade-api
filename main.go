@@ -33,7 +33,7 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
-	// go controllers.SystemTradeBase()
+	go controllers.SystemTradeBase()
 	//for range time.Tick(1 * time.Second) {
 	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 7)
 	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 14)
@@ -52,12 +52,12 @@ func main() {
 	APIClient
 	*/
 	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
-
+	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	/**
 	資金確認
 	*/
-	//fmt.Println(bitflyerClient.GetBalance())
-	//fmt.Println(bitflyerClient.GetCollateral())
+	// fmt.Println(bitflyerClient.GetBalance())
+	// fmt.Println(bitflyerClient.GetCollateral())
 	//
 	/**
 	リアルタイム apiから
