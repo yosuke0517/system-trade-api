@@ -112,7 +112,6 @@ SystemTrade:
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					if currentCollateral.Collateral > targetBalance {
-						fmt.Println("目標収益に達しているためPauseします")
 						goto Pause
 					}
 				}
@@ -385,6 +384,8 @@ Mente:
 				} else {
 					currentBalance = currentCollateral.Collateral
 					targetBalance = currentBalance * 1.002
+					log.Println("今日のターゲット：")
+					log.Println(targetBalance)
 				}
 				log.Println("Mente：システムトレードを再開します。")
 				go StreamIngestionData()
