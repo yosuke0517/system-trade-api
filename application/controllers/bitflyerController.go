@@ -115,13 +115,7 @@ SystemTrade:
 						goto Pause
 					}
 				}
-				log.Println("isTrendChange")
-				log.Println(isTrendChange)
 				if closeOrderExecutionCheck == true {
-					log.Println("クローズ注文なし・トレンド変更検知したため取引を開始します。Pauseしてみる・・・")
-					//if isUpper == 5 || isUpper == 4 {
-					//	goto SettlementPause
-					//}
 					go service.SystemTradeService(isUpper, profitRate)
 					closeOrderExecutionCheck = false
 					//isTrendChange = false
@@ -129,6 +123,7 @@ SystemTrade:
 			}
 			// ロスカット
 			if time.Now().Truncate(time.Second).Second() == 56 {
+				fmt.Println(isTrendChange)
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
@@ -238,14 +233,6 @@ SystemTrade:
 						prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
 						prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
 						prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
-						fmt.Println("prev1UpperStatus")
-						fmt.Println(prev1UpperStatus)
-						fmt.Println("prev2UpperStatus")
-						fmt.Println(prev2UpperStatus)
-						fmt.Println("prev3UpperStatus")
-						fmt.Println(prev3UpperStatus)
-						fmt.Println("prev4UpperStatus")
-						fmt.Println(prev4UpperStatus)
 						if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true {
 							log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
 							goto SmallPause
