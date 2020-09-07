@@ -75,7 +75,7 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	// APIアクセス
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
-		return nil, resp.StatusCode, err
+		return nil, 500, err
 	}
 	defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)

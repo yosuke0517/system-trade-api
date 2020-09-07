@@ -112,9 +112,15 @@ SystemTrade:
 			if time.Now().Truncate(time.Second).Second() == 0 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
-					if currentCollateral.Collateral > targetBalance {
-						goto Pause
-					}
+					fmt.Println("currentCollateral.Collateral")
+					fmt.Println(currentCollateral)
+					fmt.Println("targetBalance")
+					fmt.Println(targetBalance)
+					fmt.Println("現在残高が取れない")
+				} else {
+					//if currentCollateral.Collateral > targetBalance {
+					//	goto Pause
+					//}
 				}
 				if closeOrderExecutionCheck == true {
 					go service.SystemTradeService(isUpper, profitRate)
