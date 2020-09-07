@@ -112,9 +112,15 @@ SystemTrade:
 			if time.Now().Truncate(time.Second).Second() == 0 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
-					if currentCollateral.Collateral > targetBalance {
-						goto Pause
-					}
+					fmt.Println("currentCollateral.Collateral")
+					fmt.Println(currentCollateral)
+					fmt.Println("targetBalance")
+					fmt.Println(targetBalance)
+					fmt.Println("現在残高が取れない")
+				} else {
+					//if currentCollateral.Collateral > targetBalance {
+					//	goto Pause
+					//}
 				}
 				if closeOrderExecutionCheck == true {
 					go service.SystemTradeService(isUpper, profitRate)
@@ -208,7 +214,10 @@ SystemTrade:
 					"child_order_state": "ACTIVE",
 				}
 
-				orderRes, _ := bitflyerClient.ListOrder(params)
+				orderRes, err := bitflyerClient.ListOrder(params)
+				if err != nil {
+					fmt.Println("注文が取得できませんでした。")
+				}
 				// 注文が残っていたら準備しない
 				if len(orderRes) == 0 {
 					currentCandle := (*service.CandleInfraStruct)(candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute)))
