@@ -214,7 +214,10 @@ SystemTrade:
 					"child_order_state": "ACTIVE",
 				}
 
-				orderRes, _ := bitflyerClient.ListOrder(params)
+				orderRes, err := bitflyerClient.ListOrder(params)
+				if err != nil {
+					fmt.Println("注文が取得できませんでした。")
+				}
 				// 注文が残っていたら準備しない
 				if len(orderRes) == 0 {
 					currentCandle := (*service.CandleInfraStruct)(candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute)))
