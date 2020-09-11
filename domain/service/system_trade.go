@@ -54,6 +54,8 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
+		fmt.Println("order")
+		fmt.Println(order)
 		openRes, _ := bitflyerClient.SendOrder(order)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 		if openRes == nil {
@@ -64,9 +66,6 @@ func SystemTradeService(isUpper int, profitRate float64) {
 					break
 				}
 			}
-		}
-		if openRes == nil {
-			log.Fatal("オープンの注文が約定できませんでした。アプリケーションを終了します。")
 		}
 		if openRes.ChildOrderAcceptanceID == "" {
 			log.Fatal("オープンの注文が約定できませんでした。アプリケーションを終了します。")
@@ -270,7 +269,7 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // 前回のトレンドを受け取りトレンドの変化を判定
 // 1: 完全ロング, 2: 完全ショート, 3: ローソクが足りないとき, 4: 準ロング（10分線が21分線より低いときかつ100分線が1番低いとき）, 5: 準ショート（10分線が21分線より高いときかつ100分線が1番高いとき）
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.0003
+	var profitRate = 0.0002
 	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
 	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
 	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
