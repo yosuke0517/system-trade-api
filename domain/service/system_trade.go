@@ -291,16 +291,13 @@ func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
 		if (value10[10] < value21[20] && value21[20] > value100[99]) || (value10[10] > value100[99] && value21[20] < value100[99]) {
 			log.Println("準ロング")
 			newTrend = 4
-		}
-		if (value10[10] > value21[20] && value21[20] < value100[99]) || (value10[10] < value100[99] && value21[20] > value100[99]) {
+		} else if (value10[10] > value21[20] && value21[20] < value100[99]) || (value10[10] < value100[99] && value21[20] > value100[99]) {
 			log.Println("準ショート")
 			newTrend = 5
-		}
-		if value10[10] > value100[99] && value21[20] > value100[99] {
+		} else if value10[10] > value100[99] && value21[20] > value100[99] {
 			log.Println("ロングトレンド")
 			newTrend = 1
-		}
-		if value10[10] < value100[99] && value21[20] < value100[99] {
+		} else if value10[10] < value100[99] && value21[20] < value100[99] {
 			log.Println("ショートトレンド")
 			newTrend = 2
 		}
@@ -373,17 +370,14 @@ func SimpleSmaAnalysis() int {
 		if (value10[10] < value21[20] && value21[20] > value100[99]) || (value10[10] > value100[99] && value21[20] < value100[99]) {
 			log.Println("準ロング")
 			trend = 4
-		}
-		if (value10[10] > value21[20] && value21[20] < value100[99]) || (value10[10] < value100[99] && value21[20] > value100[99]) {
+		} else if (value10[10] > value21[20] && value21[20] < value100[99]) || (value10[10] < value100[99] && value21[20] > value100[99]) {
 			log.Println("準ショート")
 			trend = 5
-		}
-		if value10[10] > value100[99] && value21[20] > value100[99] {
+		} else if value10[10] > value100[99] && value21[20] > value100[99] {
 			log.Println("ロングトレンド")
 			trend = 1
 			return trend
-		}
-		if value10[10] < value100[99] && value21[20] < value100[99] {
+		} else if value10[10] < value100[99] && value21[20] < value100[99] {
 			log.Println("ショートトレンド")
 			trend = 2
 			return trend
