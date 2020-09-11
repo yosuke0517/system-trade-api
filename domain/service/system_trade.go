@@ -159,7 +159,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 		openRes, err := bitflyerClient.SendOrder(order)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 		if err != nil {
-			fmt.Println("err")
+			fmt.Println("errrs")
 			fmt.Println(err)
 		}
 		if openRes == nil {
