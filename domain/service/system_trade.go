@@ -151,6 +151,8 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
+		fmt.Println("order")
+		fmt.Println(order)
 		openRes, _ := bitflyerClient.SendOrder(order)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 		if openRes == nil {
