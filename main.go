@@ -94,15 +94,15 @@ func main() {
 	*/
 	//order := &bitflyer.Order{
 	//	ProductCode:     "FX_BTC_JPY",
-	//	ChildOrderType:  "LIMIT",
+	//	ChildOrderType:  "MARKET",
 	//	Side:            "BUY",
-	//	Price:           800000,
-	//	Size:            0.01,
+	//	Size:            0.1,
 	//	MinuteToExpires: 1440,
 	//	TimeInForce:     "GTC",
 	//}
-	//res, _ := bitflyerClient.SendOrder(order)
+	//res, err := bitflyerClient.SendOrder(order)
 	//fmt.Println(res)
+	//fmt.Println(err)
 
 	/**
 	注文一覧

@@ -46,11 +46,14 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 	}
 	url := "me/sendchildorder"
 	resp, _, err := api.doRequest("POST", url, map[string]string{}, data)
+	fmt.Println(resp)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	var response ResponseSendChildOrder
 	err = json.Unmarshal(resp, &response)
+	fmt.Println(err)
 	if err != nil {
 		fmt.Println("err")
 		fmt.Println(err)

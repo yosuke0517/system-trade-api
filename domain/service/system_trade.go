@@ -50,7 +50,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "BUY",
-			Size:            0.1, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.09, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -149,7 +149,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "SELL",
-			Size:            0.1, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.09, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -277,7 +277,7 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // 前回のトレンドを受け取りトレンドの変化を判定
 // 1: 完全ロング, 2: 完全ショート, 3: ローソクが足りないとき, 4: 準ロング（10分線が21分線より低いときかつ100分線が1番低いとき）, 5: 準ショート（10分線が21分線より高いときかつ100分線が1番高いとき）
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.0002
+	var profitRate = 0.0005
 	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
 	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
 	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
