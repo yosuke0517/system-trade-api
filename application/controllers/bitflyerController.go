@@ -135,22 +135,22 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			//if time.Now().Truncate(time.Second).Second() % 10 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
-			//	closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
-			//	// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
-			//	currentCollateral, err := bitflyerClient.GetCollateral()
-			//	if err != nil {
-			//		fmt.Println("currentCollateral.Collateral")
-			//		fmt.Println(currentCollateral)
-			//		fmt.Println("targetBalance")
-			//		fmt.Println(targetBalance)
-			//		fmt.Println("現在残高が取れない")
-			//	}
-			//	if closeOrderExecutionCheck == true {
-			//		go service.SystemTradeService(isUpper, profitRate)
-			//		closeOrderExecutionCheck = false
-			//	}
-			//}
+			if time.Now().Truncate(time.Second).Second()%15 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
+				// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
+				currentCollateral, err := bitflyerClient.GetCollateral()
+				if err != nil {
+					fmt.Println("currentCollateral.Collateral")
+					fmt.Println(currentCollateral)
+					fmt.Println("targetBalance")
+					fmt.Println(targetBalance)
+					fmt.Println("現在残高が取れない")
+				}
+				if closeOrderExecutionCheck == true {
+					go service.SystemTradeService(isUpper, profitRate)
+					closeOrderExecutionCheck = false
+				}
+			}
 			// ロスカット
 			if time.Now().Truncate(time.Second).Second() == 56 {
 				fmt.Println(isTrendChange)
