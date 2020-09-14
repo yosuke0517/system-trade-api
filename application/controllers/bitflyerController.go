@@ -231,7 +231,7 @@ SystemTrade:
 			}
 
 			// 注文準備
-			if time.Now().Truncate(time.Second).Second() == 29 && time.Now().Truncate(time.Second).Second() == 59 {
+			if time.Now().Truncate(time.Second).Second() == 29 || time.Now().Truncate(time.Second).Second() == 59 {
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
@@ -331,8 +331,7 @@ SystemTrade:
 								}
 							}
 							if isUpper == 3 {
-								//goto Pause
-								isUpper = 1
+								goto Pause
 							}
 						}
 					}
