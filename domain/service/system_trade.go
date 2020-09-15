@@ -64,13 +64,13 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			for i := 0; i < 30; i++ {
 				time.Sleep(time.Second * 1)
 				openRes, _ := bitflyerClient.SendOrder(order)
-				if openRes != nil {
+				if openRes.ChildOrderAcceptanceID != "" {
 					break
 				}
 			}
 		}
 		if openRes.ChildOrderAcceptanceID == "" {
-			log.Fatal("オープンの注文が約定できませんでした。アプリケーションを終了します。")
+			log.Println("オープンの注文が約定できませんでした。")
 		} else {
 			params := map[string]string{
 				"product_code":              "FX_BTC_JPY",
@@ -170,8 +170,8 @@ func SystemTradeService(isUpper int, profitRate float64) {
 				}
 			}
 		}
-		if openRes == nil {
-			log.Fatal("買付できない数量が指定されています。処理を終了します。")
+		if openRes.ChildOrderAcceptanceID == "" {
+			log.Println("オープンの注文が約定できませんでした。")
 		} else {
 			params := map[string]string{
 				"product_code":              "FX_BTC_JPY",
