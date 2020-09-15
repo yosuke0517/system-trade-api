@@ -107,7 +107,7 @@ SystemTrade:
 				}
 			}
 			// 0秒台で分析・システムトレードを走らせる
-			if (time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second() == 0 {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 9 || time.Now().Truncate(time.Second).Minute() == 9) && time.Now().Truncate(time.Second).Second() == 0 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
@@ -121,7 +121,7 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if (time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second() == 5 {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 0 || time.Now().Truncate(time.Second).Minute() == 0) && time.Now().Truncate(time.Second).Second() == 5 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
@@ -136,7 +136,7 @@ SystemTrade:
 				}
 			}
 			//if time.Now().Truncate(time.Second).Second() % 30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
-			if (time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second()%30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 0 || time.Now().Truncate(time.Second).Minute() == 0) && time.Now().Truncate(time.Second).Second()%25 == 0 {
 				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 				// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
 				currentCollateral, err := bitflyerClient.GetCollateral()
@@ -153,7 +153,7 @@ SystemTrade:
 				}
 			}
 			// ロスカット
-			if (time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second() == 56 {
+			if time.Now().Truncate(time.Second).Second() == 55 {
 				fmt.Println(isTrendChange)
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
@@ -232,7 +232,7 @@ SystemTrade:
 			}
 
 			// 注文準備
-			if ((time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second() == 29) || ((time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute()%10 == 0) && time.Now().Truncate(time.Second).Second() == 59) {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 9 || time.Now().Truncate(time.Second).Minute() == 9) && time.Now().Truncate(time.Second).Second() == 58 {
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
