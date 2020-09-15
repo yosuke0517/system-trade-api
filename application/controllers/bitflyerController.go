@@ -87,7 +87,7 @@ func SystemTradeBase() {
 	var smallPauseCount = 0
 	var menteCount = 0
 	var trend int // 1:ロング, 2:ショート, 3:ローソク情報不足, 4:ロングsmall, 5:ショートsmall
-	//var newTrend int
+	var newTrend int
 	var isTrendChange = false
 	var profitRate float64
 	var targetBalance float64
@@ -284,12 +284,12 @@ SystemTrade:
 					//			log.Println("十字線または設定値を超える値幅を検知しました。取引を10分休みます。")
 					//			goto SmallPause
 					//		}
-					//		fmt.Println("isUpper")
-					//		fmt.Println(isUpper)
-					//		trend, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
-					//		isUpper = trend
-					//		fmt.Println("isUpper")
-					//		fmt.Println(isUpper)
+					fmt.Println("isUpper")
+					fmt.Println(isUpper)
+					trend, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
+					isUpper = trend
+					fmt.Println("isUpper")
+					fmt.Println(isUpper)
 					//		if len(dfs100.Closes()) == 100 {
 					//			value100 := talib.Sma(dfs100.Closes(), 100)
 					//			// 100分線と現在のキャンドルの乖離を求める
