@@ -232,7 +232,7 @@ SystemTrade:
 			}
 
 			// 注文準備
-			if (time.Now().Truncate(time.Second).Minute()%10 == 9 || time.Now().Truncate(time.Second).Minute() == 9) && time.Now().Truncate(time.Second).Second() == 58 {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 9 || time.Now().Truncate(time.Second).Minute() == 9) && (time.Now().Truncate(time.Second).Second() == 28 || time.Now().Truncate(time.Second).Second() == 58) {
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
@@ -279,63 +279,63 @@ SystemTrade:
 					//	}
 					//}
 
-					fmt.Println("currentCandle")
-					fmt.Println(currentCandle)
-					if currentCandle != nil {
-						cross := currentCandle.Open / currentCandle.Close
-						fmt.Println("cross")
-						fmt.Println(cross)
-						params := map[string]string{
-							"product_code":      "FX_BTC_JPY",
-							"child_order_state": "ACTIVE",
-						}
-						orderRes, _ := bitflyerClient.ListOrder(params)
-						// 既存のオーダーがない場合、十字線判定
-						if len(orderRes) == 0 {
-							dfs100, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
-							fmt.Println("cross")
-							fmt.Println(cross)
-							//if (cross > 0.99994 && cross < 1.00006) || highToLow > 2000 {
-							if cross > 0.9999 && cross < 1.0001 {
-								log.Println("currentCandle")
-								log.Println(currentCandle)
-								log.Println("十字線または設定値を超える値幅を検知しました。取引を10分休みます。")
-								goto SmallPause
-							}
-							fmt.Println("isUpper")
-							fmt.Println(isUpper)
-							trend, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
-							isUpper = trend
-							fmt.Println("isUpper")
-							fmt.Println(isUpper)
-							if len(dfs100.Closes()) == 100 {
-								value100 := talib.Sma(dfs100.Closes(), 100)
-								// 100分線と現在のキャンドルの乖離を求める
-								disparation := value100[99] / currentCandle.Open
-								neary := value100[99] / currentCandle.Open
-								fmt.Println("neary")
-								fmt.Println(neary)
-								if neary > 0.999 && neary < 1.001 {
-									fmt.Println("100分線と現在価格が近いため10分休みます")
-									goto SmallPause
-								}
-								fmt.Println("disparation")
-								fmt.Println(disparation)
-								// ロング・ショートそれぞれ乖離が大きかったらPauseする
-								if isUpper == 1 && disparation < 0.96 {
-									log.Println("ロング：乖離幅が大きいためPauseします")
-									goto SmallPause
-								}
-								if isUpper == 2 && disparation > 1.04 {
-									log.Println("ショート：乖離幅が大きいためPauseします")
-									goto SmallPause
-								}
-							}
-							if isUpper == 3 {
-								//goto Pause
-							}
-						}
-					}
+					//fmt.Println("currentCandle")
+					//fmt.Println(currentCandle)
+					//if currentCandle != nil {
+					//	cross := currentCandle.Open / currentCandle.Close
+					//	fmt.Println("cross")
+					//	fmt.Println(cross)
+					//	params := map[string]string{
+					//		"product_code":      "FX_BTC_JPY",
+					//		"child_order_state": "ACTIVE",
+					//	}
+					//	orderRes, _ := bitflyerClient.ListOrder(params)
+					//	// 既存のオーダーがない場合、十字線判定
+					//	if len(orderRes) == 0 {
+					//		dfs100, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
+					//		fmt.Println("cross")
+					//		fmt.Println(cross)
+					//		//if (cross > 0.99994 && cross < 1.00006) || highToLow > 2000 {
+					//		if cross > 0.9999 && cross < 1.0001 {
+					//			log.Println("currentCandle")
+					//			log.Println(currentCandle)
+					//			log.Println("十字線または設定値を超える値幅を検知しました。取引を10分休みます。")
+					//			goto SmallPause
+					//		}
+					//		fmt.Println("isUpper")
+					//		fmt.Println(isUpper)
+					//		trend, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
+					//		isUpper = trend
+					//		fmt.Println("isUpper")
+					//		fmt.Println(isUpper)
+					//		if len(dfs100.Closes()) == 100 {
+					//			value100 := talib.Sma(dfs100.Closes(), 100)
+					//			// 100分線と現在のキャンドルの乖離を求める
+					//			disparation := value100[99] / currentCandle.Open
+					//			neary := value100[99] / currentCandle.Open
+					//			fmt.Println("neary")
+					//			fmt.Println(neary)
+					//			if neary > 0.999 && neary < 1.001 {
+					//				fmt.Println("100分線と現在価格が近いため10分休みます")
+					//				goto SmallPause
+					//			}
+					//			fmt.Println("disparation")
+					//			fmt.Println(disparation)
+					//			// ロング・ショートそれぞれ乖離が大きかったらPauseする
+					//			if isUpper == 1 && disparation < 0.96 {
+					//				log.Println("ロング：乖離幅が大きいためPauseします")
+					//				goto SmallPause
+					//			}
+					//			if isUpper == 2 && disparation > 1.04 {
+					//				log.Println("ショート：乖離幅が大きいためPauseします")
+					//				goto SmallPause
+					//			}
+					//		}
+					//		if isUpper == 3 {
+					//			//goto Pause
+					//		}
+					//	}
+					//}
 					closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 
 					// 証拠金が設定範囲内か確認
