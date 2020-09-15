@@ -54,13 +54,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
-		openRes, err := bitflyerClient.SendOrder(order)
-		fmt.Println("order")
-		fmt.Println(order)
-		fmt.Println("errrr")
-		fmt.Println(err)
-		fmt.Println("openRes")
-		fmt.Println(openRes)
+		openRes, _ := bitflyerClient.SendOrder(order)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 		//if openRes.ChildOrderAcceptanceID == "" {
 		//	for i := 0; i < 30; i++ {
@@ -163,15 +157,15 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			fmt.Println("err")
 			fmt.Println(err)
 		}
-		if openRes.ChildOrderAcceptanceID == "" {
-			for i := 0; i < 30; i++ {
-				time.Sleep(time.Second * 1)
-				openRes, _ := bitflyerClient.SendOrder(order)
-				if openRes != nil {
-					break
-				}
-			}
-		}
+		//if openRes.ChildOrderAcceptanceID == "" {
+		//	for i := 0; i < 30; i++ {
+		//		time.Sleep(time.Second * 1)
+		//		openRes, _ := bitflyerClient.SendOrder(order)
+		//		if openRes != nil {
+		//			break
+		//		}
+		//	}
+		//}
 		if openRes.ChildOrderAcceptanceID == "" {
 			log.Println("オープンの注文が約定できませんでした。")
 		} else {
