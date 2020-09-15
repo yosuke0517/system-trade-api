@@ -321,11 +321,11 @@ SystemTrade:
 								fmt.Println("disparation")
 								fmt.Println(disparation)
 								// ロング・ショートそれぞれ乖離が大きかったらPauseする
-								if isUpper == 1 && disparation < 0.98 {
+								if isUpper == 1 && disparation < 0.985 {
 									log.Println("ロング：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
-								if isUpper == 2 && disparation > 1.02 {
+								if isUpper == 2 && disparation > 1.015 {
 									log.Println("ショート：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
