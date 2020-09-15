@@ -7,7 +7,6 @@ import (
 	"app/domain/service"
 	"app/infrastructure/databases/candle"
 	"fmt"
-	"github.com/markcheno/go-talib"
 	"log"
 	"math"
 	"net/http"
@@ -88,7 +87,7 @@ func SystemTradeBase() {
 	var smallPauseCount = 0
 	var menteCount = 0
 	var trend int // 1:ロング, 2:ショート, 3:ローソク情報不足, 4:ロングsmall, 5:ショートsmall
-	var newTrend int
+	//var newTrend int
 	var isTrendChange = false
 	var profitRate float64
 	var targetBalance float64
