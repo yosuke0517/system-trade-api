@@ -108,6 +108,7 @@ SystemTrade:
 			// 0秒台で分析・システムトレードを走らせる
 			if (time.Now().Truncate(time.Second).Minute()%10 == 0 || time.Now().Truncate(time.Second).Minute() == 0) && (time.Now().Truncate(time.Second).Second() == 0 || time.Now().Truncate(time.Second).Second()%25 == 0) {
 				currentCollateral, err := bitflyerClient.GetCollateral()
+				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
 					fmt.Println(currentCollateral)
