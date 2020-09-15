@@ -1,9 +1,11 @@
 package main
 
 import (
+	"app/api/bitflyer"
 	"app/application/controllers"
 	"app/application/server"
 	"app/utils"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -33,7 +35,7 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
-	go controllers.SystemTradeBase()
+	// go controllers.SystemTradeBase()
 	//for range time.Tick(1 * time.Second) {
 	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 7)
 	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 14)
@@ -52,7 +54,7 @@ func main() {
 	APIClient
 	*/
 	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
-	// bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
+	bitflyerClient := bitflyer.New(os.Getenv("API_KEY"), os.Getenv("API_SECRET"))
 	/**
 	資金確認
 	*/
@@ -92,17 +94,17 @@ func main() {
 	/**
 	注文
 	*/
-	//order := &bitflyer.Order{
-	//	ProductCode:     "FX_BTC_JPY",
-	//	ChildOrderType:  "MARKET",
-	//	Side:            "SELL",
-	//	Size:            0.1,
-	//	MinuteToExpires: 1440,
-	//	TimeInForce:     "GTC",
-	//}
-	//res, err := bitflyerClient.SendOrder(order)
-	//fmt.Println(res)
-	//fmt.Println(err)
+	order := &bitflyer.Order{
+		ProductCode:     "FX_BTC_JPY",
+		ChildOrderType:  "MARKET",
+		Side:            "SELL",
+		Size:            0.1,
+		MinuteToExpires: 1440,
+		TimeInForce:     "GTC",
+	}
+	res, err := bitflyerClient.SendOrder(order)
+	fmt.Println(res)
+	fmt.Println(err)
 
 	/**
 	注文一覧
