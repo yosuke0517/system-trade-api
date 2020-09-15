@@ -45,8 +45,9 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 		return nil, err
 	}
 	url := "me/sendchildorder"
-	resp, _, err := api.doRequest("POST", url, map[string]string{}, data)
+	resp, code, err := api.doRequest("POST", url, map[string]string{}, data)
 	fmt.Println(resp)
+	fmt.Println(code)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

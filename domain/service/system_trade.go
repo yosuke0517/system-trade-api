@@ -48,27 +48,29 @@ func SystemTradeService(isUpper int, profitRate float64) {
 		// オープン注文
 		order := &bitflyer.Order{
 			ProductCode:     "FX_BTC_JPY",
-			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
+			ChildOrderType:  "MARKET",
 			Side:            "BUY",
-			Size:            0.1, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.1,
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
+		openRes, err := bitflyerClient.SendOrder(order)
 		fmt.Println("order")
 		fmt.Println(order)
-		openRes, err := bitflyerClient.SendOrder(order)
 		fmt.Println("errrr")
 		fmt.Println(err)
+		fmt.Println("openRes")
+		fmt.Println(openRes)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
-		if openRes.ChildOrderAcceptanceID == "" {
-			for i := 0; i < 30; i++ {
-				time.Sleep(time.Second * 1)
-				openRes, _ := bitflyerClient.SendOrder(order)
-				if openRes.ChildOrderAcceptanceID != "" {
-					break
-				}
-			}
-		}
+		//if openRes.ChildOrderAcceptanceID == "" {
+		//	for i := 0; i < 30; i++ {
+		//		time.Sleep(time.Second * 1)
+		//		openRes, _ := bitflyerClient.SendOrder(order)
+		//		if openRes.ChildOrderAcceptanceID != "" {
+		//			break
+		//		}
+		//	}
+		//}
 		if openRes.ChildOrderAcceptanceID == "" {
 			log.Println("オープンの注文が約定できませんでした。")
 		} else {

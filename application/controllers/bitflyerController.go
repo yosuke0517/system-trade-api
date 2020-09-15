@@ -107,7 +107,7 @@ SystemTrade:
 				}
 			}
 			// 0秒台で分析・システムトレードを走らせる
-			if time.Now().Truncate(time.Second).Second() == 0 {
+			if time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second() == 0 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
@@ -121,7 +121,7 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if time.Now().Truncate(time.Second).Second() == 5 {
+			if time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second() == 5 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
@@ -135,7 +135,8 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if time.Now().Truncate(time.Second).Second()%30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+			//if time.Now().Truncate(time.Second).Second() % 30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+			if time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second()%30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
 				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 				// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
 				currentCollateral, err := bitflyerClient.GetCollateral()
@@ -152,7 +153,7 @@ SystemTrade:
 				}
 			}
 			// ロスカット
-			if time.Now().Truncate(time.Second).Second() == 56 {
+			if time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second() == 56 {
 				fmt.Println(isTrendChange)
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
@@ -231,7 +232,7 @@ SystemTrade:
 			}
 
 			// 注文準備
-			if time.Now().Truncate(time.Second).Second() == 29 || time.Now().Truncate(time.Second).Second() == 59 {
+			if (time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second() == 29) || (time.Now().Truncate(time.Second).Minute()%10 == 0 && time.Now().Truncate(time.Second).Second() == 59) {
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
@@ -257,26 +258,26 @@ SystemTrade:
 						}
 					}
 					// 連続シグナル判定
-					prev1Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute))
-					prev2Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*1))
-					prev3Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*2))
-					prev4Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*3))
-					prev5Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*4))
+					//prev1Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute))
+					//prev2Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*1))
+					//prev3Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*2))
+					//prev4Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*3))
+					//prev5Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*4))
 
-					if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil {
-						prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
-						prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
-						prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
-						prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
-						prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
-						if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
-							log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
-							goto SmallPause
-						} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
-							log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
-							goto SmallPause
-						}
-					}
+					//if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil {
+					//	prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
+					//	prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
+					//	prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
+					//	prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
+					//	prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
+					//	if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
+					//		log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
+					//		goto SmallPause
+					//	} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
+					//		log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
+					//		goto SmallPause
+					//	}
+					//}
 
 					fmt.Println("currentCandle")
 					fmt.Println(currentCandle)
@@ -321,17 +322,17 @@ SystemTrade:
 								fmt.Println("disparation")
 								fmt.Println(disparation)
 								// ロング・ショートそれぞれ乖離が大きかったらPauseする
-								if isUpper == 1 && disparation < 0.985 {
+								if isUpper == 1 && disparation < 0.96 {
 									log.Println("ロング：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
-								if isUpper == 2 && disparation > 1.015 {
+								if isUpper == 2 && disparation > 1.04 {
 									log.Println("ショート：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
 							}
 							if isUpper == 3 {
-								goto Pause
+								//goto Pause
 							}
 						}
 					}
