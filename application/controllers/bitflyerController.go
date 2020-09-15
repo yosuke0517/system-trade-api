@@ -23,7 +23,7 @@ func StreamIngestionData() {
 	go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	go func() {
 		for {
-			if time.Now().Truncate(time.Second).Hour() == 19 {
+			if time.Now().Truncate(time.Second).Hour() == 4 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					log.Println("StreamIngestionData:4時〜4時30分までメンテナンスのため取引を中断します。")
 					goto StreamIngestionDataMente
@@ -99,7 +99,7 @@ SystemTrade:
 		for range time.Tick(1 * time.Second) {
 			// TODO 4時台は取引しない（cronで制御？？）
 			fmt.Println(time.Now().Truncate(time.Second))
-			if time.Now().Truncate(time.Second).Hour() == 19 {
+			if time.Now().Truncate(time.Second).Hour() == 4 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					candle.Truncate()
 					log.Println("4時〜4時40分までメンテナンスのため取引を中断します。")
@@ -135,7 +135,7 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if time.Now().Truncate(time.Second).Second()%15 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+			if time.Now().Truncate(time.Second).Second()%30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
 				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 				// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
 				currentCollateral, err := bitflyerClient.GetCollateral()

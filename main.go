@@ -95,7 +95,7 @@ func main() {
 	//order := &bitflyer.Order{
 	//	ProductCode:     "FX_BTC_JPY",
 	//	ChildOrderType:  "MARKET",
-	//	Side:            "BUY",
+	//	Side:            "SELL",
 	//	Size:            0.1,
 	//	MinuteToExpires: 1440,
 	//	TimeInForce:     "GTC",
