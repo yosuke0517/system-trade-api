@@ -2,7 +2,6 @@ package bitflyer
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 )
@@ -45,19 +44,13 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 		return nil, err
 	}
 	url := "me/sendchildorder"
-	resp, code, err := api.doRequest("POST", url, map[string]string{}, data)
-	fmt.Println(resp)
-	fmt.Println(code)
+	resp, _, err := api.doRequest("POST", url, map[string]string{}, data)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	var response ResponseSendChildOrder
 	err = json.Unmarshal(resp, &response)
-	fmt.Println(err)
 	if err != nil {
-		fmt.Println("err")
-		fmt.Println(err)
 		return nil, err
 	}
 	return &response, nil

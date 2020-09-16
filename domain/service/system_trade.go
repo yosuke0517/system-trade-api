@@ -98,16 +98,8 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			}
 			// クローズ注文
 			// TODO 利益は要相談
-			fmt.Println("orderRes[0].AveragePrice")
-			fmt.Println(orderRes[0].AveragePrice)
-			fmt.Println("profitRate")
-			fmt.Println(profitRate)
 			price := math.Floor(orderRes[0].AveragePrice * profitRate)
-			fmt.Println("price")
-			fmt.Println(price)
 			size := orderRes[0].Size
-			fmt.Println("size")
-			fmt.Println(size)
 			if orderRes != nil {
 				order := &bitflyer.Order{
 					ProductCode:     "FX_BTC_JPY",
@@ -125,16 +117,12 @@ func SystemTradeService(isUpper int, profitRate float64) {
 						time.Sleep(time.Second * 1)
 						fmt.Println("closeRes.ChildOrderAcceptanceID")
 						fmt.Println(closeRes.ChildOrderAcceptanceID)
-						fmt.Println("order.Price")
-						fmt.Println(order.Price)
 						closeRes, _ := bitflyerClient.SendOrder(order)
 						if closeRes.ChildOrderAcceptanceID != "" {
 							break
 						}
 					}
 				}
-				log.Println("closeRes.Chil")
-				log.Println(closeRes.ChildOrderAcceptanceID)
 			}
 		}
 	}
@@ -149,8 +137,6 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
-		fmt.Println("order")
-		fmt.Println(order)
 		openRes, err := bitflyerClient.SendOrder(order)
 		// オープンが成功したら注文詳細を取得する（クローズ指値に使用する）
 		if err != nil {
@@ -201,19 +187,9 @@ func SystemTradeService(isUpper int, profitRate float64) {
 				}
 				log.Fatal("オープン注文が約定しませんでした。アプリケーションを終了します。")
 			}
-			fmt.Println("orderRes[0]")
-			fmt.Println(orderRes[0])
 			// クローズ注文
-			fmt.Println("orderRes[0].AveragePrice")
-			fmt.Println(orderRes[0].AveragePrice)
-			fmt.Println("profitRate")
-			fmt.Println(profitRate)
 			price := math.Floor(orderRes[0].AveragePrice * profitRate)
-			fmt.Println("price")
-			fmt.Println(price)
 			size := orderRes[0].Size
-			fmt.Println("size")
-			fmt.Println(size)
 			if orderRes != nil {
 				order := &bitflyer.Order{
 					ProductCode:     "FX_BTC_JPY",
@@ -224,8 +200,6 @@ func SystemTradeService(isUpper int, profitRate float64) {
 					MinuteToExpires: 1440,
 					TimeInForce:     "GTC",
 				}
-				fmt.Println("order")
-				fmt.Println(order)
 				closeRes, _ := bitflyerClient.SendOrder(order)
 				if closeRes.ChildOrderAcceptanceID == "" {
 					for i := 0; i < 30; i++ {
@@ -238,8 +212,6 @@ func SystemTradeService(isUpper int, profitRate float64) {
 						}
 					}
 				}
-				fmt.Println("closeRes.ChildOrderAcceptanceIDDDDDDDDD")
-				fmt.Println(closeRes.ChildOrderAcceptanceID)
 			}
 		}
 	}
