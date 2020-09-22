@@ -23,7 +23,7 @@ func StreamIngestionData() {
 	go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	go func() {
 		for {
-			if time.Now().Truncate(time.Second).Hour() == 4 {
+			if time.Now().Truncate(time.Second).Hour() == 19 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					log.Println("StreamIngestionData:4時〜4時30分までメンテナンスのため取引を中断します。")
 					goto StreamIngestionDataMente
@@ -99,7 +99,7 @@ SystemTrade:
 		for range time.Tick(1 * time.Second) {
 			// TODO 4時台は取引しない（cronで制御？？）
 			fmt.Println(time.Now().Truncate(time.Second))
-			if time.Now().Truncate(time.Second).Hour() == 4 {
+			if time.Now().Truncate(time.Second).Hour() == 19 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					candle.Truncate()
 					log.Println("4時〜4時40分までメンテナンスのため取引を中断します。")
@@ -135,22 +135,22 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if time.Now().Truncate(time.Second).Second()%30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
-				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
-				// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
-				currentCollateral, err := bitflyerClient.GetCollateral()
-				if err != nil {
-					fmt.Println("currentCollateral.Collateral")
-					fmt.Println(currentCollateral)
-					fmt.Println("targetBalance")
-					fmt.Println(targetBalance)
-					fmt.Println("現在残高が取れない")
-				}
-				if closeOrderExecutionCheck == true {
-					go service.SystemTradeService(isUpper, profitRate)
-					closeOrderExecutionCheck = false
-				}
-			}
+			//if time.Now().Truncate(time.Second).Second() % 30 == 0 && time.Now().Truncate(time.Second).Second() != 0 && time.Now().Truncate(time.Second).Second() != 60 {
+			//	closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
+			//	// isUpper, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
+			//	currentCollateral, err := bitflyerClient.GetCollateral()
+			//	if err != nil {
+			//		fmt.Println("currentCollateral.Collateral")
+			//		fmt.Println(currentCollateral)
+			//		fmt.Println("targetBalance")
+			//		fmt.Println(targetBalance)
+			//		fmt.Println("現在残高が取れない")
+			//	}
+			//	if closeOrderExecutionCheck == true {
+			//		go service.SystemTradeService(isUpper, profitRate)
+			//		closeOrderExecutionCheck = false
+			//	}
+			//}
 			// ロスカット
 			if time.Now().Truncate(time.Second).Second() == 56 {
 				fmt.Println(isTrendChange)
@@ -187,7 +187,7 @@ SystemTrade:
 					log.Println("execLossCut")
 					log.Println(execLossCut)
 					// TODO 損切りの条件（仮）注文してから60分経過 or 注文時の価格と現在価格が2000円以上差がある時 ||中止中
-					if orderTime.Add(time.Minute*30).Before(time.Now()) == true || math.Abs(limitPrice) > 4000 {
+					if orderTime.Add(time.Minute*30).Before(time.Now()) == true || math.Abs(limitPrice) > 5000 {
 						fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
 						cancelOrder := &bitflyer.CancelOrder{
 							ProductCode:            "FX_BTC_JPY",
