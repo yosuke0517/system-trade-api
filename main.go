@@ -33,7 +33,7 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
-	go controllers.SystemTradeBase()
+	// go controllers.SystemTradeBase()
 	//for range time.Tick(1 * time.Second) {
 	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 7)
 	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 14)
@@ -103,7 +103,7 @@ func main() {
 	//res, err := bitflyerClient.SendOrder(order)
 	//fmt.Println(res)
 	//fmt.Println(err)
-
+	// go service.SystemTradeService(1, 1.00007)
 	/**
 	注文一覧
 	*/
