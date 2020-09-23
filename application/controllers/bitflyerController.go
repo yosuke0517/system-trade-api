@@ -107,8 +107,12 @@ SystemTrade:
 				}
 			}
 			// 0秒台で分析・システムトレードを走らせる
-			if (time.Now().Truncate(time.Second).Minute()%10 == 4 || time.Now().Truncate(time.Second).Minute() == 4) && time.Now().Truncate(time.Second).Second() == 0 {
+			if (time.Now().Truncate(time.Second).Minute() == 4 || time.Now().Truncate(time.Second).Minute() == 14 ||
+				time.Now().Truncate(time.Second).Minute() == 24 || time.Now().Truncate(time.Second).Minute() == 34 ||
+				time.Now().Truncate(time.Second).Minute() == 44 || time.Now().Truncate(time.Second).Minute() == 54) &&
+				time.Now().Truncate(time.Second).Second() == 0 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
+				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
 					fmt.Println(currentCollateral)
@@ -121,7 +125,9 @@ SystemTrade:
 					closeOrderExecutionCheck = false
 				}
 			}
-			if (time.Now().Truncate(time.Second).Minute()%10 == 4 || time.Now().Truncate(time.Second).Minute() == 4) && time.Now().Truncate(time.Second).Second() == 5 {
+			if (time.Now().Truncate(time.Second).Minute() == 4 || time.Now().Truncate(time.Second).Minute() == 14 ||
+				time.Now().Truncate(time.Second).Minute() == 24 || time.Now().Truncate(time.Second).Minute() == 34 ||
+				time.Now().Truncate(time.Second).Minute() == 44 || time.Now().Truncate(time.Second).Minute() == 54) && time.Now().Truncate(time.Second).Second() == 5 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					fmt.Println("currentCollateral.Collateral")
@@ -165,13 +171,14 @@ SystemTrade:
 					fmt.Println(limitPriceAbsolute)
 					log.Printf("注文した価格との乖離：%s", strconv.FormatFloat(limitPriceAbsolute, 'f', -1, 64))
 					fmt.Printf("orderTime：%s", orderTime)
+					fmt.Printf("orderTimeから12時間後：%s", orderTime.Add(time.Hour*12))
 					fmt.Println("注文から120分以上経過したかどうか？")
-					fmt.Println(orderTime.Add(time.Minute * 120).Before(time.Now()))
+					fmt.Println(orderTime.Add(time.Hour * 12).Before(time.Now()))
 					execLossCut := service.LossCut(trend)
 					log.Println("execLossCut")
 					log.Println(execLossCut)
 					// TODO 損切りの条件（仮）注文してから60分経過 or 注文時の価格と現在価格が2000円以上差がある時 ||中止中
-					if orderTime.Add(time.Minute*45).Before(time.Now()) == true || math.Abs(limitPrice) > 5000 {
+					if orderTime.Add(time.Hour*1).Before(time.Now()) == true || math.Abs(limitPrice) > 8000 {
 						fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
 						cancelOrder := &bitflyer.CancelOrder{
 							ProductCode:            "FX_BTC_JPY",
@@ -215,7 +222,9 @@ SystemTrade:
 			}
 
 			// 注文準備
-			if (time.Now().Truncate(time.Second).Minute()%10 == 3 || time.Now().Truncate(time.Second).Minute() == 3) && time.Now().Truncate(time.Second).Second() == 57 {
+			if (time.Now().Truncate(time.Second).Minute() == 3 || time.Now().Truncate(time.Second).Minute() == 13 ||
+				time.Now().Truncate(time.Second).Minute() == 23 || time.Now().Truncate(time.Second).Minute() == 33 ||
+				time.Now().Truncate(time.Second).Minute() == 43 || time.Now().Truncate(time.Second).Minute() == 53) && time.Now().Truncate(time.Second).Second() == 57 {
 				params := map[string]string{
 					"product_code":      "FX_BTC_JPY",
 					"child_order_state": "ACTIVE",
@@ -239,26 +248,26 @@ SystemTrade:
 						}
 					}
 					// 連続シグナル判定
-					//prev1Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute))
-					//prev2Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*1))
-					//prev3Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*2))
-					//prev4Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*3))
-					//prev5Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*4))
+					prev1Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute))
+					prev2Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*1))
+					prev3Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*2))
+					prev4Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*3))
+					prev5Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*4))
 
-					//if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil {
-					//	prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
-					//	prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
-					//	prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
-					//	prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
-					//	prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
-					//	if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
-					//		log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
-					//		goto SmallPause
-					//	} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
-					//		log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
-					//		goto SmallPause
-					//	}
-					//}
+					if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil {
+						prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
+						prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
+						prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
+						prev4UpperStatus := prev4Candle.Open < prev4Candle.Close
+						prev5UpperStatus := prev5Candle.Open < prev5Candle.Close
+						if prev1UpperStatus == true && prev2UpperStatus == true && prev3UpperStatus == true && prev4UpperStatus == true && prev5UpperStatus == true {
+							log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
+							goto SmallPause
+						} else if prev1UpperStatus == false && prev2UpperStatus == false && prev3UpperStatus == false && prev4UpperStatus == false && prev5UpperStatus == false {
+							log.Println("同一のシグナルが連続で発生しているため取引を3分間中断します。")
+							goto SmallPause
+						}
+					}
 
 					//fmt.Println("currentCandle")
 					//fmt.Println(currentCandle)
@@ -293,11 +302,11 @@ SystemTrade:
 									goto SmallPause
 								}
 								// ロング・ショートそれぞれ乖離が大きかったらPauseする
-								if isUpper == 1 && disparation < 0.96 {
+								if isUpper == 1 && disparation < 0.98 {
 									log.Println("ロング：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
-								if isUpper == 2 && disparation > 1.04 {
+								if isUpper == 2 && disparation > 1.02 {
 									log.Println("ショート：乖離幅が大きいためPauseします")
 									goto SmallPause
 								}
@@ -331,7 +340,7 @@ Pause:
 		for range time.Tick(1 * time.Second) {
 			count++
 			fmt.Println(count)
-			if count == 600 {
+			if count == 1200 {
 				log.Println("Pause：システムトレードを再開します。")
 				count = 0
 				goto SystemTrade
