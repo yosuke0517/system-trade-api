@@ -198,6 +198,8 @@ SystemTrade:
 								MinuteToExpires: 1440,
 								TimeInForce:     "GTC",
 							}
+							fmt.Println("損切りorderRRRRRRRRRRRRRRRRRR")
+							fmt.Println(order)
 							closeRes, _ := bitflyerClient.SendOrder(order)
 							log.Printf("設定時間または設定価格をオーバーしました。損切りします。%s", time.Now())
 							log.Println(closeRes)
