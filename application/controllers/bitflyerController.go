@@ -23,7 +23,7 @@ func StreamIngestionData() {
 	go bitflyerClient.GetRealTimeTicker(os.Getenv("PRODUCT_CODE"), tickerChannl)
 	go func() {
 		for {
-			if time.Now().Truncate(time.Second).Hour() == 19 {
+			if time.Now().Truncate(time.Second).Hour() == 4 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					log.Println("StreamIngestionData:4時〜4時30分までメンテナンスのため取引を中断します。")
 					goto StreamIngestionDataMente
@@ -33,8 +33,6 @@ func StreamIngestionData() {
 				for _, duration := range config.Config.Durations {
 					isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
 					if isCreated == true && duration == config.Config.TradeDuration {
-						fmt.Println("ticker.Timestamp")
-						fmt.Println(ticker.Timestamp)
 					}
 				}
 			}
@@ -98,8 +96,7 @@ SystemTrade:
 		// 1秒タイマー
 		for range time.Tick(1 * time.Second) {
 			// TODO 4時台は取引しない（cronで制御？？）
-			fmt.Println(time.Now().Truncate(time.Second))
-			if time.Now().Truncate(time.Second).Hour() == 19 {
+			if time.Now().Truncate(time.Second).Hour() == 4 {
 				if time.Now().Truncate(time.Second).Minute() < 30 {
 					candle.Truncate()
 					log.Println("4時〜4時40分までメンテナンスのため取引を中断します。")
@@ -111,15 +108,6 @@ SystemTrade:
 				time.Now().Truncate(time.Second).Minute() == 24 || time.Now().Truncate(time.Second).Minute() == 34 ||
 				time.Now().Truncate(time.Second).Minute() == 44 || time.Now().Truncate(time.Second).Minute() == 54) &&
 				time.Now().Truncate(time.Second).Second() == 0 {
-				currentCollateral, err := bitflyerClient.GetCollateral()
-				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
-				if err != nil {
-					fmt.Println("currentCollateral.Collateral")
-					fmt.Println(currentCollateral)
-					fmt.Println("targetBalance")
-					fmt.Println(targetBalance)
-					fmt.Println("現在残高が取れない")
-				}
 				if closeOrderExecutionCheck == true {
 					go service.SystemTradeService(isUpper, profitRate)
 					closeOrderExecutionCheck = false
@@ -128,14 +116,6 @@ SystemTrade:
 			if (time.Now().Truncate(time.Second).Minute() == 4 || time.Now().Truncate(time.Second).Minute() == 14 ||
 				time.Now().Truncate(time.Second).Minute() == 24 || time.Now().Truncate(time.Second).Minute() == 34 ||
 				time.Now().Truncate(time.Second).Minute() == 44 || time.Now().Truncate(time.Second).Minute() == 54) && time.Now().Truncate(time.Second).Second() == 5 {
-				currentCollateral, err := bitflyerClient.GetCollateral()
-				if err != nil {
-					fmt.Println("currentCollateral.Collateral")
-					fmt.Println(currentCollateral)
-					fmt.Println("targetBalance")
-					fmt.Println(targetBalance)
-					fmt.Println("現在残高が取れない")
-				}
 				if closeOrderExecutionCheck == true {
 					go service.SystemTradeService(isUpper, profitRate)
 					closeOrderExecutionCheck = false
@@ -230,6 +210,8 @@ SystemTrade:
 					"child_order_state": "ACTIVE",
 				}
 
+				closeOrderExecutionCheck = service.CloseOrderExecutionCheck()
+
 				orderRes, err := bitflyerClient.ListOrder(params)
 				if err != nil {
 					fmt.Println("注文が取得できませんでした。取り敢えずPause")
@@ -254,7 +236,7 @@ SystemTrade:
 					prev4Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*3))
 					prev5Candle := candle.SelectOne(os.Getenv("PRODUCT_CODE"), time.Minute, time.Now().Truncate(time.Minute).Add(-time.Minute*4))
 
-					if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil {
+					if prev1Candle != nil && prev2Candle != nil && prev3Candle != nil && prev4Candle != nil && prev5Candle != nil {
 						prev1UpperStatus := prev1Candle.Open < prev1Candle.Close
 						prev2UpperStatus := prev2Candle.Open < prev2Candle.Close
 						prev3UpperStatus := prev3Candle.Open < prev3Candle.Close
