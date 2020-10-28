@@ -72,11 +72,13 @@ func (c *candleInfraStruct) Insert() error {
 	if err != nil {
 		log.Println(err)
 	}
-	// jst, _ := time.LoadLocation("Asia/Tokyo")
-	_, err = ins.Exec(c.Time, c.Open, c.Close, c.High, c.Low, c.Volume)
-	if err != nil {
-		log.Println(err)
+	if ins != nil {
+		_, err = ins.Exec(c.Time, c.Open, c.Close, c.High, c.Low, c.Volume)
+		if err != nil {
+			log.Println(err)
+		}
 	}
+	// jst, _ := time.LoadLocation("Asia/Tokyo")
 	return nil
 }
 
@@ -88,7 +90,9 @@ func (c *candleInfraStruct) Save() error {
 	if err != nil {
 		log.Println(err)
 	}
-	upd.Exec(c.Open, c.Close, c.High, c.Low, c.Volume, c.Time)
+	if upd != nil {
+		upd.Exec(c.Open, c.Close, c.High, c.Low, c.Volume, c.Time)
+	}
 	return nil
 }
 

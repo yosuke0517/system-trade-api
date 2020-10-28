@@ -48,7 +48,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET",
 			Side:            "BUY",
-			Size:            0.08,
+			Size:            0.05,
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -90,40 +90,39 @@ func SystemTradeService(isUpper int, profitRate float64) {
 					}
 				}
 			}
-			if len(orderRes) == 0 {
-				log.Fatal("オープン注文が約定しませんでした。アプリケーションを終了します。")
-			}
-			fmt.Println("orderRes")
-			fmt.Println(len(orderRes))
-			// クローズ注文
-			// TODO 利益は要相談
-			price := math.Floor(orderRes[0].AveragePrice * profitRate)
-			size := orderRes[0].Size
-			if orderRes != nil {
-				order := &bitflyer.Order{
-					ProductCode:     "FX_BTC_JPY",
-					ChildOrderType:  "LIMIT",
-					Side:            "SELL",
-					Price:           price,
-					Size:            size,
-					MinuteToExpires: 1440,
-					TimeInForce:     "GTC",
-				}
-				// クローズ注文が出来てなかったら繰り返す
-				closeRes, _ := bitflyerClient.SendOrder(order)
-				fmt.Println("クローズオーダー出します")
-				fmt.Println("closeRes")
-				fmt.Println(closeRes)
-				if closeRes.ChildOrderAcceptanceID == "" {
-					for i := 0; i < 30; i++ {
-						fmt.Println("closeRes.ChildOrderAcceptanceID")
-						fmt.Println(closeRes.ChildOrderAcceptanceID)
-						closeRes, _ := bitflyerClient.SendOrder(order)
-						if closeRes.ChildOrderAcceptanceID != "" {
-							break
+			if len(orderRes) != 0 {
+				// クローズ注文
+				// TODO 利益は要相談
+				price := math.Floor(orderRes[0].AveragePrice * profitRate)
+				size := orderRes[0].Size
+				if orderRes != nil {
+					order := &bitflyer.Order{
+						ProductCode:     "FX_BTC_JPY",
+						ChildOrderType:  "LIMIT",
+						Side:            "SELL",
+						Price:           price,
+						Size:            size,
+						MinuteToExpires: 1440,
+						TimeInForce:     "GTC",
+					}
+					// クローズ注文が出来てなかったら繰り返す
+					closeRes, _ := bitflyerClient.SendOrder(order)
+					fmt.Println("クローズオーダー出します")
+					fmt.Println("closeRes")
+					fmt.Println(closeRes)
+					if closeRes.ChildOrderAcceptanceID == "" {
+						for i := 0; i < 30; i++ {
+							fmt.Println("closeRes.ChildOrderAcceptanceID")
+							fmt.Println(closeRes.ChildOrderAcceptanceID)
+							closeRes, _ := bitflyerClient.SendOrder(order)
+							if closeRes.ChildOrderAcceptanceID != "" {
+								break
+							}
 						}
 					}
 				}
+			} else {
+				log.Println("オープン注文が約定しませんでした。")
 			}
 		}
 	}
@@ -134,7 +133,7 @@ func SystemTradeService(isUpper int, profitRate float64) {
 			ProductCode:     "FX_BTC_JPY",
 			ChildOrderType:  "MARKET", // LIMIT(指値）or MARKET（成行）
 			Side:            "SELL",
-			Size:            0.08, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
+			Size:            0.05, // TODO フロントで計算する？？余計な計算入れたくないからフロントで計算したい
 			MinuteToExpires: 1440,
 			TimeInForce:     "GTC",
 		}
@@ -188,32 +187,32 @@ func SystemTradeService(isUpper int, profitRate float64) {
 				}
 				log.Fatal("オープン注文が約定しませんでした。アプリケーションを終了します。")
 			}
-			fmt.Println("orderRes")
-			fmt.Println(orderRes)
-			// クローズ注文
-			price := math.Floor(orderRes[0].AveragePrice * profitRate)
-			size := orderRes[0].Size
-			if orderRes != nil {
-				order := &bitflyer.Order{
-					ProductCode:     "FX_BTC_JPY",
-					ChildOrderType:  "LIMIT",
-					Side:            "BUY",
-					Price:           price,
-					Size:            size,
-					MinuteToExpires: 1440,
-					TimeInForce:     "GTC",
-				}
-				fmt.Println("クローズオーダー出します")
-				closeRes, _ := bitflyerClient.SendOrder(order)
-				fmt.Println("closeRes")
-				fmt.Println(closeRes)
-				if closeRes.ChildOrderAcceptanceID == "" {
-					for i := 0; i < 30; i++ {
-						fmt.Println("closeRes.ChildOrderAcceptanceID")
-						fmt.Println(closeRes.ChildOrderAcceptanceID)
-						closeRes, _ := bitflyerClient.SendOrder(order)
-						if closeRes.ChildOrderAcceptanceID != "" {
-							break
+			if len(orderRes) != 0 {
+				// クローズ注文
+				price := math.Floor(orderRes[0].AveragePrice * profitRate)
+				size := orderRes[0].Size
+				if orderRes != nil {
+					order := &bitflyer.Order{
+						ProductCode:     "FX_BTC_JPY",
+						ChildOrderType:  "LIMIT",
+						Side:            "BUY",
+						Price:           price,
+						Size:            size,
+						MinuteToExpires: 1440,
+						TimeInForce:     "GTC",
+					}
+					fmt.Println("クローズオーダー出します")
+					closeRes, _ := bitflyerClient.SendOrder(order)
+					fmt.Println("closeRes")
+					fmt.Println(closeRes)
+					if closeRes.ChildOrderAcceptanceID == "" {
+						for i := 0; i < 30; i++ {
+							fmt.Println("closeRes.ChildOrderAcceptanceID")
+							fmt.Println(closeRes.ChildOrderAcceptanceID)
+							closeRes, _ := bitflyerClient.SendOrder(order)
+							if closeRes.ChildOrderAcceptanceID != "" {
+								break
+							}
 						}
 					}
 				}
@@ -250,7 +249,7 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // 前回のトレンドを受け取りトレンドの変化を判定
 // 1: 完全ロング, 2: 完全ショート, 3: ローソクが足りないとき, 4: 準ロング（10分線が21分線より低いときかつ100分線が1番低いとき）, 5: 準ショート（10分線が21分線より高いときかつ100分線が1番高いとき）
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.00004
+	var profitRate = 0.00005
 	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
 	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
 	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)

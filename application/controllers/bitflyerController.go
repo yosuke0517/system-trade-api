@@ -288,27 +288,29 @@ SystemTrade:
 							}
 							trend, profitRate, isTrendChange = service.SmaAnalysis(isUpper, newTrend)
 							isUpper = trend
-							if len(dfs100.Closes()) == 100 {
-								value100 := talib.Sma(dfs100.Closes(), 100)
-								// 100分線と現在のキャンドルの乖離を求める
-								disparation := value100[99] / currentCandle.Close
-								neary := value100[99] / currentCandle.Close
-								fmt.Println("disparation")
-								fmt.Println(disparation)
-								fmt.Println("neary")
-								fmt.Println(neary)
-								if neary > 0.999 && neary < 1.001 {
-									fmt.Println("100分線と現在価格が近いため10分休みます")
-									goto SmallPause
-								}
-								// ロング・ショートそれぞれ乖離が大きかったらPauseする
-								if isUpper == 1 && disparation < 0.98 {
-									log.Println("ロング：乖離幅が大きいためPauseします")
-									goto SmallPause
-								}
-								if isUpper == 2 && disparation > 1.02 {
-									log.Println("ショート：乖離幅が大きいためPauseします")
-									goto SmallPause
+							if dfs100 != nil {
+								if len(dfs100.Closes()) == 100 {
+									value100 := talib.Sma(dfs100.Closes(), 100)
+									// 100分線と現在のキャンドルの乖離を求める
+									disparation := value100[99] / currentCandle.Close
+									neary := value100[99] / currentCandle.Close
+									fmt.Println("disparation")
+									fmt.Println(disparation)
+									fmt.Println("neary")
+									fmt.Println(neary)
+									if neary > 0.999 && neary < 1.001 {
+										fmt.Println("100分線と現在価格が近いため10分休みます")
+										goto SmallPause
+									}
+									// ロング・ショートそれぞれ乖離が大きかったらPauseする
+									if isUpper == 1 && disparation < 0.98 {
+										log.Println("ロング：乖離幅が大きいためPauseします")
+										goto SmallPause
+									}
+									if isUpper == 2 && disparation > 1.02 {
+										log.Println("ショート：乖離幅が大きいためPauseします")
+										goto SmallPause
+									}
 								}
 							}
 							if isUpper == 3 {
