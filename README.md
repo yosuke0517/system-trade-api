@@ -37,6 +37,19 @@
   - `sql-migrate down`でダウンダウングレード
   
 # github運用
+- とりあえずec2
+  - 言語設定
+    - `sudo vim /etc/sysconfig/i18n`
+```i18n
+LANG=ja_JP.UTF-8
+```
+  - 時間設定
+    - `sudo cp /usr/share/zoneinfo/Japan /etc/localtime`
+    - `sudo vim /etc/sysconfig/clock`
+```click
+ZONE="Asia/Tokyo"
+UTC=true
+```
 - issueベースのPR開発
   - issueを登録する
   - `feature/Issues#○○`でブランチを作る

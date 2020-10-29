@@ -11,7 +11,7 @@ ENV CGO_ENABLED=0
 
 RUN set -eux && \
   apk update && \
-  apk add --no-cache git curl gcc alpine-sdk && \
+  apk add --no-cache vim git curl gcc alpine-sdk && \
   go get -u github.com/labstack/echo/... && \
   go get golang.org/x/tools/cmd/godoc && \
   go get -v github.com/rubenv/sql-migrate/...
