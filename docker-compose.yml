@@ -21,9 +21,8 @@ services:
       - SYS_PTRACE
     stdin_open: true
     depends_on:
-      - systemtrade-db
-  systemtrade-db:
-    container_name: systemtrade-db
+      - db
+  db:
     build:
       # dockerfileの名前だけ指定する
       dockerfile: Dockerfile
@@ -41,9 +40,9 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - TZ=Asia/Tokyo
     ports:
-      - 3305:3305
+      - 3306:3306
     expose:
-      - 3305
+      - 3306
     volumes:
       - ./dbdata:/var/lib/mysql
 volumes:
