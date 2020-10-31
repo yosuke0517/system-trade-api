@@ -94,6 +94,8 @@ func (c *candleInfraStruct) Save() error {
 
 // キャンドル情報を取得する
 func SelectOne(productCode string, duration time.Duration, dateTime time.Time) *candleInfraStruct {
+	loc, _ := time.LoadLocation("Asia/Tokyo")
+	layout := "Jan 2, 2006 at 3:04pm"
 	tableName := GetCandleTableName(productCode, duration)
 	cmd := fmt.Sprintf("SELECT time, open, close, high, low, volume FROM  %s WHERE time = ?", tableName)
 	var candle candleInfraStruct
@@ -101,7 +103,8 @@ func SelectOne(productCode string, duration time.Duration, dateTime time.Time) *
 	if err != nil {
 		return nil
 	}
-	return NewCandle(productCode, duration, candle.Time, candle.Open, candle.Close, candle.High, candle.Low, candle.Volume)
+	time, _ := time.ParseInLocation(layout, candle.Time.Format(layout), loc)
+	return NewCandle(productCode, duration, time, candle.Open, candle.Close, candle.High, candle.Low, candle.Volume)
 }
 
 // キャンドル情報を全て取得する
