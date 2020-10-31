@@ -3,7 +3,7 @@ version: '3.7'
 services:
   go:
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       context: .
       target: build
     volumes:

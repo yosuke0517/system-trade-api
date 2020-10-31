@@ -67,8 +67,8 @@ func StreamIngestionData() {
 func GetAllCandle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		productCode := r.URL.Query().Get("product_code")
+		// パラメータで指定がない場合は設定ファイルのものを使う
 		if productCode == "" {
-			//response.BadRequest(w, "No product_code")
 			productCode = os.Getenv("PRODUCT_CODE")
 		}
 		strLimit := r.URL.Query().Get("limit")
@@ -77,15 +77,28 @@ func GetAllCandle() http.HandlerFunc {
 			// デフォルトは1000とする
 			limit = 1000
 		}
-
+		// 単位
 		duration := r.URL.Query().Get("duration")
 		if duration == "" {
+			// デフォルトは分とする
 			duration = "1m"
 		}
 		durationTime := config.Config.Durations[duration]
 
 		df, _ := service.GetAllCandle(productCode, durationTime, limit)
 		response.Success(w, df.Candles)
+	}
+}
+
+func GetLatestCandle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productCode := r.URL.Query().Get("product_code")
+		// パラメータで指定がない場合は設定ファイルのものを使う
+		if productCode == "" {
+			productCode = os.Getenv("PRODUCT_CODE")
+		}
+		currentCandle := candle.SelectOne(productCode, time.Minute, time.Now().Truncate(time.Minute))
+		response.Success(w, currentCandle)
 	}
 }
 

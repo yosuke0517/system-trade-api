@@ -6,6 +6,7 @@ import (
 )
 
 func Serve() {
+	http.HandleFunc("/api/latestCandle", get(controllers.GetLatestCandle()))
 	http.HandleFunc("/api/chart", get(controllers.GetAllCandle()))
 	http.ListenAndServe(":8080", nil)
 }
