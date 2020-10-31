@@ -98,6 +98,9 @@ func GetLatestCandle() http.HandlerFunc {
 			productCode = os.Getenv("PRODUCT_CODE")
 		}
 		currentCandle := candle.SelectOne(productCode, time.Minute, time.Now().Truncate(time.Minute))
+		if currentCandle == nil {
+			response.Success(w, time.Now())
+		}
 		response.Success(w, currentCandle)
 	}
 }
