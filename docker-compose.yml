@@ -9,11 +9,10 @@ services:
     volumes:
       - ./:/go/app
     command: >
-      air
+      go run main.go
       sql-migrate up
     ports:
       - 8080:8080
-      - 2345:2345
       - 6060:6060
     security_opt:
       - apparmor:unconfined
