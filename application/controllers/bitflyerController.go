@@ -12,6 +12,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -46,6 +47,7 @@ func StreamIngestionData() {
 				if isCreated == true && duration == config.Config.TradeDuration {
 				}
 			}
+			runtime.GC()
 		}
 	StreamIngestionDataMente:
 		for {
