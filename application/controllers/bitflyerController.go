@@ -30,10 +30,6 @@ func StreamIngestionData() {
 					goto StreamIngestionDataMente
 				}
 			}
-			if time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute() == 30 {
-				log.Println("GCします")
-				runtime.GC()
-			}
 			for ticker := range tickerChannl {
 				for _, duration := range config.Config.Durations {
 					isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
@@ -41,6 +37,10 @@ func StreamIngestionData() {
 						fmt.Println("ticker.Timestamp")
 						fmt.Println(ticker.Timestamp)
 					}
+				}
+				if time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute() == 30 {
+					log.Println("GCします")
+					runtime.GC()
 				}
 			}
 		}
