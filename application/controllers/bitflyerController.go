@@ -12,7 +12,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"runtime"
 	"strconv"
 	"time"
 )
@@ -38,20 +37,16 @@ func StreamIngestionData() {
 						fmt.Println(ticker.Timestamp)
 					}
 				}
-				if time.Now().Truncate(time.Second).Minute() == 0 || time.Now().Truncate(time.Second).Minute() == 30 {
-					log.Println("GCします")
-					runtime.GC()
-				}
 			}
 		}
-		for ticker := range tickerChannl {
-			fmt.Printf("action=StreamIngestionData, %v", ticker)
-			for _, duration := range config.Config.Durations {
-				isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
-				if isCreated == true && duration == config.Config.TradeDuration {
-				}
-			}
-		}
+		//for ticker := range tickerChannl {
+		//	fmt.Printf("action=StreamIngestionData, %v", ticker)
+		//	for _, duration := range config.Config.Durations {
+		//		isCreated := service.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
+		//		if isCreated == true && duration == config.Config.TradeDuration {
+		//		}
+		//	}
+		//}
 	StreamIngestionDataMente:
 		for {
 			for range time.Tick(1 * time.Second) {

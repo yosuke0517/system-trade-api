@@ -10,11 +10,13 @@ import (
 // キャンドル情報を保存する
 func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, duration time.Duration) bool {
 	currentCandle := candle.SelectOne(productCode, duration, ticker.TruncateDateTime(duration))
-	// price := ticker.GetMidPrice()
+	price := ticker.GetMidPrice()
 	// 秒単位は毎回insert
 	if currentCandle == nil {
-		//candle := candle.NewCandle(productCode, duration, ticker.TruncateDateTime(duration),
-		//	price, price, price, price, ticker.Volume)
+		candle := candle.NewCandle(productCode, duration, ticker.TruncateDateTime(duration),
+			price, price, price, price, ticker.Volume)
+		if candle != nil {
+		}
 		//candle.Insert()
 		return true
 	}
