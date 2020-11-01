@@ -17,7 +17,7 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 			price, price, price, price, ticker.Volume)
 		if candle != nil {
 		}
-		//candle.Insert()
+		candle.Insert()
 		return true
 	}
 	// 分・時単位は秒単位ではupdateする
