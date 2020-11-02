@@ -39,7 +39,7 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 		shouldSave = true
 	}
 	// Volumeは毎回足す
-	totalVolume += ticker.Volume
+	currentCandle.Volume += ticker.Volume
 	if shouldSave == true || time.Now().Truncate(time.Second).Second() == 59 {
 		currentCandle.Close = price
 		currentCandle.Save()
