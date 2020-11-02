@@ -21,7 +21,6 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 		return true
 	}
 	shouldSave := false
-	totalVolume := 0.0
 	// 分・時単位は秒単位ではupdateする
 	//if currentCandle.High <= price {
 	//	currentCandle.High = price
