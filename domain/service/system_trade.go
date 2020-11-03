@@ -249,10 +249,10 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // 1: 完全ロング, 2: 完全ショート, 3: ローソクが足りないとき, 4: 準ロング（10分線が21分線より低いときかつ100分線が1番低いとき）, 5: 準ショート（10分線が21分線より高いときかつ100分線が1番高いとき）
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
 	var profitRate = 0.00005
-	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
-	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
-	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
-	// dfs45, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 45)
+	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 11)
+	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 21)
+	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 100)
+	// dfs45, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 45)
 	fmt.Println("len(dfs100.Closes())")
 	fmt.Println(len(dfs100.Closes()))
 	if len(dfs100.Closes()) == 100 {
@@ -260,12 +260,6 @@ func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
 		value10 := talib.Sma(dfs10.Closes(), 11)
 		value21 := talib.Sma(dfs21.Closes(), 21)
 		value100 := talib.Sma(dfs100.Closes(), 100)
-		fmt.Println("value100[99]")
-		fmt.Println(value100[99])
-		fmt.Println("value10[10]")
-		fmt.Println(value10[10])
-		fmt.Println("value21[20]")
-		fmt.Println(value21[20])
 		if (value10[10] < value21[20] && value21[20] > value100[99]) || (value10[10] > value100[99] && value21[20] < value100[99]) {
 			log.Println("準ロング")
 			newTrend = 4
@@ -331,9 +325,9 @@ func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
 // トレンドのみ返す
 func SimpleSmaAnalysis() int {
 	var trend = 0
-	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 11)
-	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 21)
-	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
+	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 11)
+	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 21)
+	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 100)
 	if len(dfs100.Closes()) == 100 {
 		// 各キャンドルのclose値を渡す
 		value10 := talib.Sma(dfs10.Closes(), 11)

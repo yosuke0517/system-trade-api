@@ -300,7 +300,7 @@ SystemTrade:
 						orderRes, _ := bitflyerClient.ListOrder(params)
 						// 既存のオーダーがない場合、十字線判定
 						if len(orderRes) == 0 {
-							dfs100, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 100)
+							dfs100, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 100)
 							//if (cross > 0.99994 && cross < 1.00006) || highToLow > 2000 {
 							if cross > 0.9999 && cross < 1.0001 {
 								log.Println("十字線または設定値を超える値幅を検知しました。取引を10分休みます。")

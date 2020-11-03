@@ -33,11 +33,11 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
-	go controllers.SystemTradeBase()
+	//go controllers.SystemTradeBase()
 	//for range time.Tick(1 * time.Second) {
-	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 7)
-	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 14)
-	//	dfs50, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["1m"], 50)
+	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 7)
+	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 14)
+	//	dfs50, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 50)
 	//	fmt.Println("df")
 	//	fmt.Println(dfs7)
 	//	// 各キャンドルのclose値を渡す
