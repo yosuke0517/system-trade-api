@@ -24,7 +24,7 @@ func StreamIngestionData() {
 	go func() {
 		for {
 			if time.Now().Truncate(time.Second).Hour() == 19 {
-				if time.Now().Truncate(time.Second).Minute() < 30 {
+				if time.Now().Truncate(time.Second).Minute() < 13 {
 					log.Println("StreamIngestionData:4時〜4時30分までメンテナンスのため取引を中断します。")
 					goto StreamIngestionDataMente
 				}
@@ -51,7 +51,7 @@ func StreamIngestionData() {
 				menteCount++
 				fmt.Println("menteCount:StramIngestionData")
 				fmt.Println(menteCount)
-				if menteCount == 2000 {
+				if menteCount == 720 {
 					log.Println("StreamIngestionDataMente：ローソク足情報収集を再開します。")
 					menteCount = 0
 					break StreamIngestionDataMente
@@ -122,7 +122,8 @@ SystemTrade:
 		for range time.Tick(1 * time.Second) {
 			// TODO 4時台は取引しない（cronで制御？？）
 			if time.Now().Truncate(time.Second).Hour() == 19 {
-				if time.Now().Truncate(time.Second).Minute() < 30 {
+				if time.Now().Truncate(time.Second).Minute() < 13 {
+					// 5分足にしたのでTruncateやめた
 					candle.Truncate()
 					log.Println("4時〜4時40分までメンテナンスのため取引を中断します。")
 					goto Mente
@@ -199,7 +200,7 @@ SystemTrade:
 					log.Println(execLossCut)
 					// TODO 損切りの条件（仮）注文してから60分経過 or 注文時の価格と現在価格が2000円以上差がある時 ||中止中
 					if orderTime.Add(time.Hour*1).Before(time.Now()) == true || math.Abs(limitPrice) > 8000 {
-						fmt.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
+						log.Println("損切りの条件に達したため注文をキャンセルし、成行でクローズします。")
 						cancelOrder := &bitflyer.CancelOrder{
 							ProductCode:            "FX_BTC_JPY",
 							ChildOrderAcceptanceID: orderRes[0].ChildOrderAcceptanceID,
@@ -222,17 +223,17 @@ SystemTrade:
 							fmt.Println(order)
 							closeRes, _ := bitflyerClient.SendOrder(order)
 							log.Printf("設定時間または設定価格をオーバーしました。損切りします。%s", time.Now())
-							log.Println(closeRes)
 							if closeRes.ChildOrderAcceptanceID == "" {
 								time.Sleep(time.Second * 1)
 								for i := 0; i < 50; i++ {
 									closeRes, _ := bitflyerClient.SendOrder(order)
-									log.Println("closeRes")
-									log.Println(closeRes.ChildOrderAcceptanceID)
 									if closeRes.ChildOrderAcceptanceID != "" {
+										log.Println("損切り完了")
 										break
 									}
 								}
+							} else {
+								log.Println("損切り完了")
 							}
 						}
 						// 損切り後様子を見る
@@ -388,7 +389,7 @@ Mente:
 		for range time.Tick(1 * time.Second) {
 			menteCount++
 			fmt.Println(menteCount)
-			if menteCount == 8600 {
+			if menteCount == 720 {
 				currentCollateral, err := bitflyerClient.GetCollateral()
 				if err != nil {
 					log.Println("現在の残高が取得できませんでした。")

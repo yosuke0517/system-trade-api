@@ -33,7 +33,7 @@ func main() {
 	リアルタイム controllerから
 	*/
 	go controllers.StreamIngestionData()
-	//go controllers.SystemTradeBase()
+	go controllers.SystemTradeBase()
 	//for range time.Tick(1 * time.Second) {
 	//	dfs7, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 7)
 	//	dfs14, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 14)

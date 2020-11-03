@@ -248,13 +248,10 @@ func IsUpperJudgment(prevCandle *CandleInfraStruct) int {
 // 前回のトレンドを受け取りトレンドの変化を判定
 // 1: 完全ロング, 2: 完全ショート, 3: ローソクが足りないとき, 4: 準ロング（10分線が21分線より低いときかつ100分線が1番低いとき）, 5: 準ショート（10分線が21分線より高いときかつ100分線が1番高いとき）
 func SmaAnalysis(trend, newTrend int) (int, float64, bool) {
-	var profitRate = 0.00005
+	var profitRate = 0.005
 	dfs10, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 11)
 	dfs21, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 21)
 	dfs100, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 100)
-	// dfs45, _ := GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 45)
-	fmt.Println("len(dfs100.Closes())")
-	fmt.Println(len(dfs100.Closes()))
 	if len(dfs100.Closes()) == 100 {
 		// 各キャンドルのclose値を渡す
 		value10 := talib.Sma(dfs10.Closes(), 11)
