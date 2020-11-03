@@ -1,13 +1,10 @@
 package candle
 
 import (
-	"app/config"
-	"app/domain/service"
 	"app/infrastructure"
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"time"
 )
 
@@ -46,11 +43,10 @@ func (c *candleInfraStruct) TableName() string {
 }
 
 // テーブルを空にする
-func Truncate() error {
+func Truncate(isDelete bool) error {
 	cmd1 := fmt.Sprintf("TRUNCATE %s", "FX_BTC_JPY_1h0m0s")
 	cmd2 := fmt.Sprintf("TRUNCATE %s", "FX_BTC_JPY_1m0s")
-	dfs250, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 250)
-	if len(dfs250.Closes()) == 250 {
+	if isDelete == true {
 		cmd3 := fmt.Sprintf("DELETE FROM FX_BTC_JPY_5m0s order by time limit 150")
 		truncate3, err3 := infrastructure.DB.Prepare(cmd3)
 		if err3 != nil {

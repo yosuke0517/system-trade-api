@@ -124,7 +124,12 @@ SystemTrade:
 			if time.Now().Truncate(time.Second).Hour() == 19 {
 				if time.Now().Truncate(time.Second).Minute() < 13 {
 					// 5分足にしたのでTruncateやめた
-					candle.Truncate()
+					dfs250, _ := service.GetAllCandle(os.Getenv("PRODUCT_CODE"), config.Config.Durations["5m"], 250)
+					isDelete := false
+					if len(dfs250.Closes()) == 250 {
+						isDelete = true
+					}
+					candle.Truncate(isDelete)
 					log.Println("4時〜4時40分までメンテナンスのため取引を中断します。")
 					goto Mente
 				}
